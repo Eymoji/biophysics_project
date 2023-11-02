@@ -1,0 +1,19 @@
+Guide compilation et execution de programmes C/C++ dans le terminal de Visual Studio code
+
+Pour ouvrir un nouveau dossier avec VS code, il faut ouvrir un centre de commande windows, se deplacer jusqu'au dossier dans lequel on souhaite coder grace a la commande 'cd Utilisateurs/Bureau/...
+Cela depend du chemin de votre dossier.
+Quand on est dqns le bon repertoire, on ouvre VS code avec la commande "code ."
+
+Quand on modifie une partie du code c++ (dans les fichiers .cpp), il faut inclure ces changements dans le fichier .o correspondant.
+Pour cela, on effectue de la terminal la commande "g++ -c -o nom_du_fichier.o nom_du_fichier.cpp -Wall"
+
+Pour faire fonctionner SFML, il faut ajouter les options incluant les librairies sfml: -lsfml-graphics -lsfml-window -lsfml-system etc...
+
+Ensuite, tous ces changements doivent etre aussi pris en compte dans le fichier "execute" correspondant au programme principal que l'on veut faire tourner.
+On effectue la commande "g++ -o execute programme_principal.o programme_secondaire1.o programme secondaire2.o -Wall"
+On inclue evidemment autant de programme secondaire aue l'on veut.
+
+Il peut etre utile de donner un nouveau nom a chaque nouveau fichier execute aue l'on cree pour effectuer des programmes principaux independants sans avoir a reediter le fichier executable
+a chaque fois.
+
+Une fois l'executable cree, on effecute simplement "./execute" et le code tourne.
