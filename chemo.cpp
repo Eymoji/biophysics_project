@@ -18,6 +18,8 @@ chemo::chemo(double Taillesurface, double a, double D, double D_prime) {
         y = uniform_distribution(0, Taillesurface);
     } while (norm(x - Taillesurface/2, y - Taillesurface/2) < a);
 
+    // TODO : Add the condition for the chemo to be initially outside of the bacteria
+
     vx = 0;
     vy = 0;
 
@@ -26,8 +28,7 @@ chemo::chemo(double Taillesurface, double a, double D, double D_prime) {
 }
 
 
-chemo::~chemo() {
-}
+chemo::~chemo() = default;
 
 
 void chemo::diffusion_langevin(double eta, double dt) {
@@ -47,7 +48,7 @@ void chemo::diffusion_langevin(double eta, double dt) {
 }
 
 
-bool chemo::in_the_cell(double a, double Taillesurface) {
+bool chemo::in_the_cell(double a, double Taillesurface) const {
     //The molecules follow a Brownian Motion but can't enter the cell without going through a receptor
     //This function tests if the molecule is out of the cell in the next iteration
     if (norm(x + vx - Taillesurface/2, y + vy - Taillesurface/2) < a)

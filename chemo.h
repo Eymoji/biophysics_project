@@ -15,19 +15,16 @@ class chemo {
 public:
 
     //position//
-    double x;
-    double y;
+    double x, y;
     
     //velocity//
-    double vx;
-    double vy;
+    double vx, vy;
 
     //radius of chemo//
     double r;
 
     //diffusion properties//
-    double D1;
-    double D2;
+    double D1, D2;
 
     chemo();
     chemo(double Taillesurface, double a, double D1, double D2);
@@ -43,7 +40,7 @@ public:
     void boundary_conditions(double Taillesurface);
 
     //Update of position
-    bool in_the_cell(double a, double Taillesurface);
+    bool in_the_cell(double a, double Taillesurface) const;
     void update_position(double dt);
 };
 
