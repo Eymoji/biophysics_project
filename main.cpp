@@ -16,17 +16,17 @@ int main() {
     /** PARAMETERS **/
 
     //Properties of the cell
-    double Rcell = 100;            //cell radius
+    double Rcell = 100;                 //cell radius
 
     //Properties of chemoattractants
-    int Nchemo;                         //number of chemo in the system
+    int Nchemo;                         //Number of chemoattractants in the system
     double D1 = 1;                      //Diffusion coefficient in the volume
     double D2 = 1;                      //Diffusion coefficient on the surface of the cell
     double cinf = 0.001;                //Concentration at long distance
 
     //Properties of receptors
-    double Rrec = 1;                       //Receptors radius
-    int Nrec = 100;                        //Number of receptors
+    double Rrec = 1;                    //Receptors radius
+    int Nrec = 100;                     //Number of receptors
 
     //Properties of the ambient medium
     double eta = 0;                     //Viscosity of the medium
@@ -35,6 +35,12 @@ int main() {
     double dt = 0.1;                    //Time interval between two iterations
     double time_max = 50;               //Simulation time
     double L = 2000;                    //Simulation length on each axis
+
+    fstream parameters;
+    parameters.open("data/param.csv",ios::out);
+    parameters << "Rcell,Rrec,Nrec,time_max,dt,L" << endl;
+    parameters << Rcell << "," << Rrec << "," << Nrec << "," << time_max << "," << dt << "," << L << endl;
+    parameters.close();
 
 
     /** INITIALISATION **/
@@ -93,7 +99,7 @@ int main() {
     nbr_absorption.open("data/nbr_absorption.txt", ios::out);
     nbr_absorption << "time/receptor ";
     for (int i = 1; i <= Nchemo; i++)
-        nbr_absorption << to_string(i) << " ";    //The first line of file gives us the name of receptor// 
+        nbr_absorption << to_string(i) << " ";    //The first line of file gives us the name of receptor//
     nbr_absorption << endl;
 
     //We write the coordinates of molecules during the first iteration
