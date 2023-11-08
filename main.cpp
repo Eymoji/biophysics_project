@@ -20,7 +20,7 @@ int main() {
 
     //Properties of chemoattractants
     int Nchemo;                         //Number of chemoattractants in the system
-    double D1 = 1;                      //Diffusion coefficient in the volume
+    double D1 = 3;                      //Diffusion coefficient in the volume
     double D2 = 1;                      //Diffusion coefficient on the surface of the cell
     double cinf = 0.001;                //Concentration at long distance
 
@@ -113,15 +113,14 @@ int main() {
 
 
 
-    //We initialize the time of our simulation, and execute the simulation for 10 mins:
-    for (double t=dt; t<=time_max; t+=dt) {
-//        cout << "Progression : " << 100 * t / time_max << " %" << std::endl;
+    /** TIME EVOLUTION **/
 
-        //We are in an iteration of time
+    for (double t=dt; t<=time_max; t+=dt) {
+        cout << "Progression : " << 100 * t / time_max << " %" << std::endl;
 
         //For each receptor:
         for(int i = 0; i < Nrec; i++)
-            //We test if it absorbs Rcell molecule
+            //Test if it absorbs a molecule
             receptor_vector[i].absorption(chemo_vector);
 
 
@@ -129,7 +128,7 @@ int main() {
         //For each molecule:
         for(int i = 0; i < Nchemo; i++) {
 
-            //If Rcell molecule has been absorbed by Rcell recetor duriing the last iteration, we send it far from the bacterium
+            //If a molecule has been absorbed by a receptor during the last iteration, we send it far from the bacterium
             chemo_vector[i].absorbed(receptor_vector, Rrec, Rcell, L);
 
             //We compute the new velocity while the molecule doesn't enter the bacterium

@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import csv
 
+
 # Open and read DataFiles
 
-xbrut = open("data/x.txt", "r")
-ybrut = open("data/y.txt", "r")
-
 param = [row for row in csv.DictReader(open("data/param.csv", newline=''))][0]
+param = {key: float(value) for key, value in param.items()}
+
 
 def format(a):
 	a = a.read().split("\n")[1:-1]
@@ -16,36 +16,44 @@ def format(a):
 		a[i] = a[i].split(" ")[1:-1]
 	return np.array(a, dtype=float)
 
-x = format(xbrut)
-y = format(ybrut)
+x = format(open("data/x.txt", "r"))
+y = format(open("data/y.txt", "r"))
+
+
+# Plotting and animation
+
+naff = len(x[0])//10 # Number of chemoattractants to plot
 
 fig = plt.figure()
-ax = plt.axes(xlim=(0, 2000), ylim=(0, 2000))
+# ax = plt.axes(xlim=(param['L']/2-2*param['Rcell'], param['L']/2+2*param['Rcell']), 
+#               ylim=(param['L']/2-2*param['Rcell'], param['L']/2+2*param['Rcell']))
+ax = plt.axes(xlim=(0, param['L']),ylim=(0, param['L']))
+ax.set_facecolor('black')
 
-naff = len(x[0])//10
 
 
-lines = [ax.plot([], [], lw=2)[0] for _ in range(naff)]
+lines = [ax.plot([], [], lw=2, color='cyan')[0] for _ in range(naff)]
 
 
 def init():
 	for j in range(naff):
 		lines[j].set_data([], [])
-	circle = plt.Circle((0, 0), float(param['Rcell']), fill=False, color='black')
+	circle = plt.Circle((param['L']/2, param['L']/2), param['Rcell'], fill=False, color='white')
 	ax.add_patch(circle)
 	return lines
 
 
 def animate(i):
+	print('frame : ', i)
 	for j in range(naff):
-		lines[j].set_data(x[:i, j], y[:i, j])
+		lines[j].set_data(x[max(0,i-5):i, j], y[max(0,i-5):i, j])
 	return lines
 
 
 
-anim = animation.FuncAnimation(fig, animate, init_func=init, frames=2000, interval=1, blit=True)
+anim = animation.FuncAnimation(fig, animate, init_func=init, frames=2000, interval=5, blit=True)
 
 plt.show()
-
+# anim.save('animation.mp4', writer='ffmpeg', dpi=70)
 
 

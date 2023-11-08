@@ -18,8 +18,6 @@ chemo::chemo(double Taillesurface, double a, double D, double D_prime) {
         y = uniform_distribution(0, Taillesurface);
     } while (norm(x - Taillesurface/2, y - Taillesurface/2) < a);
 
-    // TODO : Add the condition for the chemo to be initially outside of the bacteria
-
     vx = 0;
     vy = 0;
 
@@ -43,6 +41,7 @@ void chemo::diffusion_langevin(double eta, double dt) {
     double theta = uniform_distribution(0,2*M_PI);
 
     //We modify the velocity of the molecule
+    double r=1;
     vx = vx + dt * (F*cos(theta) - 6*M_PI*eta*r*vx);
     vy = vy + dt * (F*sin(theta) - 6*M_PI*eta*r*vy);
 }
@@ -66,7 +65,7 @@ void chemo::update_position(double dt) {
 
 void chemo::absorbed(vector<receptor> detection_system, double s, double a, double Taillesurface) {
     //If a molecule is absorbed, we send it back at long distance from the bacterium to keep a constant density of molecule
-    //during the  simulation. To do so, we determine a the ratio between the size of the surface and th size of the bacterium
+    //during the  simulation. To do so, we determine the ratio between the size of the surface and th size of the bacterium
     double ratio = Taillesurface/a;
 
     for (unsigned int i; i < detection_system.size(); i++) {

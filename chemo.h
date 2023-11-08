@@ -20,9 +20,6 @@ public:
     //velocity//
     double vx, vy;
 
-    //radius of chemo//
-    double r;
-
     //diffusion properties//
     double D1, D2;
 
