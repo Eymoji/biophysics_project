@@ -25,8 +25,8 @@ int main() {
     double cinf = 0.002;                //Concentration at long distance
 
     //Properties of receptors
-    double Rrec = 1;                    //Receptors radius
-    int Nrec = 100;                     //Number of receptors
+    double Rrec = 2;                    //Receptors radius
+    int Nrec = 30;                     //Number of receptors
 
     //Properties of the ambient medium
     double eta = 0;                     //Viscosity of the medium
@@ -54,9 +54,11 @@ int main() {
 
     //Creation of a vector of receptors (they are only points with two coordinates and size Rrec)
     vector<receptor> receptor_vector (Nrec);
-    for(int i = 0; i < Nrec; i++)
-        receptor_vector [i] = receptor (Rrec, Rcell, 2. * M_PI * i / Nrec);
-
+    ofstream coord_receptor ("data/rec.txt");
+    for(int i = 0; i < Nrec; i++) {
+        receptor_vector[i] = receptor (Rrec, Rcell, 2. * M_PI * i / Nrec, L);
+        coord_receptor << receptor_vector[i].x << " " << receptor_vector[i].y << " " << std::endl;
+    }
 
     //Save the position of particles, one for x coordinates, one for y coordinates, and information given by receptors
     ofstream coordinate_x("data/x.txt");
@@ -120,6 +122,7 @@ int main() {
     coordinate_y.close();
     nbr_absorption.close();
     parameters.close();
+    coord_receptor.close();
 
     return 0;
 }

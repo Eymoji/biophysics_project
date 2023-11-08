@@ -26,7 +26,7 @@ public:
     int n;
 
     receptor();
-    receptor(double s, double a, double theta);
+    receptor(double s, double a, double theta, double L);
     ~receptor();
 
     //Absorption of a chemo by a receptor

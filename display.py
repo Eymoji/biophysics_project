@@ -11,18 +11,19 @@ param = {key: float(value) for key, value in param.items()}
 
 
 def format(a):
-	a = a.read().split("\n")[:-1]
+	a = a.read().split(" \n")[:-1]
 	for i in range(len(a)):
-		a[i] = a[i].split(" ")[:-1]
+		a[i] = a[i].split(" ")
 	return np.array(a, dtype=float)
 
 x = format(open("data/x.txt", "r"))
 y = format(open("data/y.txt", "r"))
-
+rec = format(open("data/rec.txt", "r"))
+print(rec)
 
 # Plotting and animation
 
-naff = len(x[0])//10 # Number of chemoattractants to plot
+naff = len(x[0])//5 # Number of chemoattractants to plot
 
 fig = plt.figure()
 # ax = plt.axes(xlim=(param['L']/2-2*param['Rcell'], param['L']/2+2*param['Rcell']), 
@@ -40,6 +41,9 @@ def init():
 		lines[j].set_data([], [])
 	circle = plt.Circle((param['L']/2, param['L']/2), param['Rcell'], fill=False, color='white')
 	ax.add_patch(circle)
+ 
+	for i in range(len(rec)):
+		ax.add_patch(plt.Circle((rec[i][0], rec[i][1]), param['Rrec'], fill=True, color='red'))
 	return lines
 
 
@@ -54,6 +58,5 @@ def animate(i):
 anim = animation.FuncAnimation(fig, animate, init_func=init, frames=2000, interval=5, blit=True)
 
 plt.show()
-# anim.save('animation.mp4', writer='ffmpeg', dpi=70)
 
 

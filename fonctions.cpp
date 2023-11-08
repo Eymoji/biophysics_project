@@ -30,3 +30,8 @@ double norm(double x, double y) {
   double n = sqrt(x*x+y*y);
   return n;
 }
+
+double norm2(double x, double y) {
+    double n = x*x+y*y;
+    return n;
+}

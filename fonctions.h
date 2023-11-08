@@ -1,6 +1,6 @@
-#ifndef _FONCTIONS_H
-#define _FONCTONS_H
+#pragma once
+
 double rejetgaussien(double moyenne, double variance);
 double uniform_distribution(double min, double max);
 double norm(double x, double y);
-#endif
+double norm2(double x, double y);

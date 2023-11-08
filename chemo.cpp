@@ -16,7 +16,7 @@ chemo::chemo(double Taillesurface, double a, double D, double D_prime) {
     do {
         x = uniform_distribution(0, Taillesurface);
         y = uniform_distribution(0, Taillesurface);
-    } while (norm(x - Taillesurface/2, y - Taillesurface/2) < a);
+    } while (norm2(x - Taillesurface/2, y - Taillesurface/2) < a*a);
 
     vx = 0;
     vy = 0;
@@ -49,7 +49,7 @@ void chemo::diffusion_langevin(double eta, double dt) {
 
 bool chemo::in_the_cell(double a, double Taillesurface) const {
     //This function tests if the molecule is out of the cell in the next iteration
-    return (norm(x + vx - Taillesurface/2, y + vy - Taillesurface/2) < a);
+    return (norm2(x + vx - Taillesurface/2, y + vy - Taillesurface/2) < a*a);
 }
 
 
