@@ -48,12 +48,8 @@ void chemo::diffusion_langevin(double eta, double dt) {
 
 
 bool chemo::in_the_cell(double a, double Taillesurface) const {
-    //The molecules follow a Brownian Motion but can't enter the cell without going through a receptor
     //This function tests if the molecule is out of the cell in the next iteration
-    if (norm(x + vx - Taillesurface/2, y + vy - Taillesurface/2) < a)
-        return true;
-    else
-        return false;
+    return (norm(x + vx - Taillesurface/2, y + vy - Taillesurface/2) < a);
 }
 
 
@@ -63,29 +59,11 @@ void chemo::update_position(double dt) {
 }
 
 
-void chemo::absorbed(vector<receptor> detection_system, double s, double a, double Taillesurface) {
-    //If a molecule is absorbed, we send it back at long distance from the bacterium to keep a constant density of molecule
-    //during the  simulation. To do so, we determine the ratio between the size of the surface and th size of the bacterium
-    double ratio = Taillesurface/a;
-
-    for (unsigned int i; i < detection_system.size(); i++) {
-        if (norm(detection_system[i].x - x, detection_system[i].y - y) < s) {
-            x = Taillesurface/2 + ratio/2 * (x - Taillesurface/2);
-            y = Taillesurface/2 + ratio/2 * (y - Taillesurface/2);
-        }
-    }
-}
-
-
-void chemo::boundary_conditions(double Taillesurface) {
+void chemo::boundary_conditions(double L) {
     //We keep all the molecules onr our surface, which is consistent since the medium around the bacterium
     //is considered to be infinite, and we want to keep the same number of molecules in the system.
-    if (x < 0)
-        x += Taillesurface;
-    if (x > Taillesurface)
-        x -= Taillesurface;
-    if (y < 0)
-        y += Taillesurface;
-    if (y > Taillesurface)
-        y -= Taillesurface;
+    if (x < 0)  x += L;
+    if (x > L)  x -= L;
+    if (y < 0)  y += L;
+    if (y > L)  y -= L;
 }

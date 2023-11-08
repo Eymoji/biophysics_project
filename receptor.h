@@ -30,7 +30,7 @@ public:
     ~receptor();
 
     //Absorption of a chemo by a receptor
-    void absorption(vector<chemo> groupe);
+    void absorption(vector<chemo>& vector_chemo, double L);
     
 };
 

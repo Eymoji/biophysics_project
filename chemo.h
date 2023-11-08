@@ -31,10 +31,10 @@ public:
     void diffusion_langevin(double eta, double dt);
     
     //Absoprtion of a molecule by a receptor
-    void absorbed(vector<receptor> detection_system, double s, double a, double Taillesurface);
+    void absorbed(const vector<receptor>& detection_system, double s, double a, double L);
 
     //Boundary conditions
-    void boundary_conditions(double Taillesurface);
+    void boundary_conditions(double L);
 
     //Update of position
     bool in_the_cell(double a, double Taillesurface) const;

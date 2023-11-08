@@ -22,7 +22,7 @@ int main() {
     int Nchemo;                         //Number of chemoattractants in the system
     double D1 = 3;                      //Diffusion coefficient in the volume
     double D2 = 1;                      //Diffusion coefficient on the surface of the cell
-    double cinf = 0.001;                //Concentration at long distance
+    double cinf = 0.002;                //Concentration at long distance
 
     //Properties of receptors
     double Rrec = 1;                    //Receptors radius
@@ -36,8 +36,8 @@ int main() {
     double time_max = 50;               //Simulation time
     double L = 2000;                    //Simulation length on each axis
 
-    fstream parameters;
-    parameters.open("data/param.csv",ios::out);
+    //Save parameters
+    ofstream parameters("data/param.csv");
     parameters << "Rcell,Rrec,Nrec,time_max,dt,L" << endl;
     parameters << Rcell << "," << Rrec << "," << Nrec << "," << time_max << "," << dt << "," << L << endl;
     parameters.close();
@@ -45,91 +45,48 @@ int main() {
 
     /** INITIALISATION **/
 
-    //Creation of a vector of chemo
-    vector<chemo> chemo_vector;
+    //Creation of a vector of chemoattractants
     Nchemo = int(cinf * L * L);
-    cout << "Number of chemoattractants : " << Nchemo << std::endl;
-    for(int i = 0; i < Nchemo; i++) {
-        chemo C(L, Rcell, D1, D2);
-        chemo_vector.push_back(C);
-    }
+    vector<chemo> chemo_vector (Nchemo);
+    for(int i = 0; i < Nchemo; i++)
+        chemo_vector[i] = chemo (L, Rcell, D1, D2);
+
 
     //Creation of a vector of receptors (they are only points with two coordinates and size Rrec)
-    vector<receptor> receptor_vector;
-    cout << "Number of receptors : " << Nrec << std::endl;
-    for(int i = 0; i < Nrec; i++) {
-        receptor R(Rrec, Rcell, 2. * M_PI * i / Nrec);     //Receptors are first distributed around the bacterium//
-        receptor_vector.push_back(R);
-    }
+    vector<receptor> receptor_vector (Nrec);
+    for(int i = 0; i < Nrec; i++)
+        receptor_vector [i] = receptor (Rrec, Rcell, 2. * M_PI * i / Nrec);
 
 
-
-    //We want to write our data in a file to exploit it in python
-
-    //We save the position of particles, one for x coordinates, one for y coordinates
-    fstream coordinate_x;
-    fstream coordinate_y;
-
-    coordinate_x.open("data/x.txt", ios::out);
-    coordinate_x << "time/molecule ";
-    coordinate_y.open("data/y.txt", ios::out);
-    coordinate_y << "time/molecule ";
-    for (int i = 1; i <= Nchemo; i++) {
-        coordinate_x << to_string(i) << " ";    //The first line of file gives us the name of molecules//
-        coordinate_y << to_string(i) << " ";    //The first line of file gives us the name of molecules//
-    }
-    coordinate_x << endl;
-    coordinate_y << endl;
-
-
-    //We write the coordinates of molecules during the first iteration
-    coordinate_x << 0 << " ";                   //The first column of file gives us the time//
-    coordinate_y << 0 << " ";                   //The first column of file gives us the time//
-    for (int i = 1; i <= Nchemo; i++) {
-        coordinate_x << chemo_vector[i].x << " ";
-        coordinate_y << chemo_vector[i].y << " ";
-    }
-    coordinate_x << endl;
-    coordinate_y << endl;
-
-
-    //We save information given by receptors
-    fstream nbr_absorption;
-
-    nbr_absorption.open("data/nbr_absorption.txt", ios::out);
+    //Save the position of particles, one for x coordinates, one for y coordinates, and information given by receptors
+    ofstream coordinate_x("data/x.txt");
+    ofstream coordinate_y ("data/y.txt");
+    ofstream nbr_absorption ("data/nbr_absorption.txt");
     nbr_absorption << "time/receptor ";
-    for (int i = 1; i <= Nchemo; i++)
+    for (int i = 0; i < Nchemo; i++)
         nbr_absorption << to_string(i) << " ";    //The first line of file gives us the name of receptor//
     nbr_absorption << endl;
 
     //We write the coordinates of molecules during the first iteration
     nbr_absorption << 0 << " ";                   //The first column of file gives us the time//
-    for (int i = 1; i <= Nrec; i++) {
-//        nbr_absorption << 0 << " ";
+    for (int i = 0; i < Nrec; i++) {
         nbr_absorption << receptor_vector[i].n << " ";
     }
     nbr_absorption << endl;
 
 
+    /** EVOLUTION TIME **/
 
-
-    /** TIME EVOLUTION **/
-
-    for (double t=dt; t<=time_max; t+=dt) {
-        cout << "Progression : " << 100 * t / time_max << " %" << std::endl;
+    for (int t=0; t<=time_max/dt; t++) {
+        cout << "Progression : " << 100 * t * dt / time_max << " %" << "\r";
 
         //For each receptor:
         for(int i = 0; i < Nrec; i++)
-            //Test if it absorbs a molecule
-            receptor_vector[i].absorption(chemo_vector);
-
-
+            // Test if it absorbs a molecule, if so, is activated and the molecule ii randomly replaced
+            receptor_vector[i].absorption(chemo_vector, L);
 
         //For each molecule:
         for(int i = 0; i < Nchemo; i++) {
-
-            //If a molecule has been absorbed by a receptor during the last iteration, we send it far from the bacterium
-            chemo_vector[i].absorbed(receptor_vector, Rrec, Rcell, L);
 
             //We compute the new velocity while the molecule doesn't enter the bacterium
             do {
@@ -143,10 +100,8 @@ int main() {
             chemo_vector[i].boundary_conditions(L);
         }
 
-        //We write the coordinates of molecules for this iteration
-        coordinate_x << t << " ";                   //The first column of file gives us the time//
-        coordinate_y << t << " ";                   //The first column of file gives us the time//
-        for (int i = 1; i <= Nchemo; i++) {
+
+        for (int i = 0; i < Nchemo; i++) {
             coordinate_x << chemo_vector[i].x << " ";
             coordinate_y << chemo_vector[i].y << " ";
         }
@@ -154,8 +109,7 @@ int main() {
         coordinate_y << endl;
 
         //We write the number of molecules absorbed by each receptor until this iteration
-        nbr_absorption << t << " ";                   //The first column of file gives us the time//
-        for (int i = 1; i <= Nchemo; i++)
+        for (int i = 0; i < Nrec; i++)
             nbr_absorption << receptor_vector[i].n << " ";
         nbr_absorption << endl;
 
@@ -165,6 +119,7 @@ int main() {
     coordinate_x.close();
     coordinate_y.close();
     nbr_absorption.close();
+    parameters.close();
 
     return 0;
 }

@@ -11,9 +11,9 @@ param = {key: float(value) for key, value in param.items()}
 
 
 def format(a):
-	a = a.read().split("\n")[1:-1]
+	a = a.read().split("\n")[:-1]
 	for i in range(len(a)):
-		a[i] = a[i].split(" ")[1:-1]
+		a[i] = a[i].split(" ")[:-1]
 	return np.array(a, dtype=float)
 
 x = format(open("data/x.txt", "r"))
