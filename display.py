@@ -1,10 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 import csv
+from PIL import Image, ImageDraw
+import imageio
 
 
-# Open and read DataFiles
+# DATA LOADING
 
 param = [row for row in csv.DictReader(open("data/param.csv", newline=''))][0]
 param = {key: float(value) for key, value in param.items()}
@@ -19,44 +19,58 @@ def format(a):
 x = format(open("data/x.txt", "r"))
 y = format(open("data/y.txt", "r"))
 rec = format(open("data/rec.txt", "r"))
-print(rec)
-
-# Plotting and animation
-
-naff = len(x[0])//5 # Number of chemoattractants to plot
-
-fig = plt.figure()
-# ax = plt.axes(xlim=(param['L']/2-2*param['Rcell'], param['L']/2+2*param['Rcell']), 
-#               ylim=(param['L']/2-2*param['Rcell'], param['L']/2+2*param['Rcell']))
-ax = plt.axes(xlim=(0, param['L']),ylim=(0, param['L']))
-ax.set_facecolor('black')
+abs = format(open("data/nbr_absorption.txt", "r"))
 
 
+# ANIMATION PARAMETERS
 
-lines = [ax.plot([], [], lw=2, color='cyan')[0] for _ in range(naff)]
+width = height = int(param['L'])
+frames = []
 
+L = param['L']
+Rcell = param['Rcell']
+Rrec = param['Rrec']
 
-def init():
-	for j in range(naff):
-		lines[j].set_data([], [])
-	circle = plt.Circle((param['L']/2, param['L']/2), param['Rcell'], fill=False, color='white')
-	ax.add_patch(circle)
+naff = len(x[0]) 											# Number of chemoattractants to plot
+nt = int(param['time_max']/param['dt']) 					# Number of frames to plot
+img = Image.new('RGB', (width, height), color='black')		# Create a default image
+
+# ANIMATION GENERATION
+
+for time in range(nt):
+	print('frame : ', time, '/', nt, end='\r')
+
+	ans_img = img
+	img = Image.new('RGB', (width, height), color='black')
+	draw = ImageDraw.Draw(img)
+
+	# draw the cell
+	draw.ellipse((L/2-Rcell, L/2-Rcell, L/2+Rcell, L/2+Rcell), fill=(0, 30, 30))
  
+	# draw the chemoattractants
+	for part in range(naff):
+		xi = int(x[time, part])
+		yi = int(y[time, part])
+		if xi < width and yi < height:
+			r,g,b = img.getpixel((xi, yi))
+			img.putpixel((xi, yi), (r+40, g+40, 200))
+
+	# draw the receptors
 	for i in range(len(rec)):
-		ax.add_patch(plt.Circle((rec[i][0], rec[i][1]), param['Rrec'], fill=True, color='red'))
-	return lines
+		xi = int(rec[i][0])
+		yi = int(rec[i][1])
+		if xi < width and yi < height:
+			if time==0:
+				draw.ellipse((xi-Rrec, yi-Rrec, xi+Rrec, yi+Rrec), fill=(40, 150, 150)) # green initially
+			elif abs[time,i] > 0.5:
+				draw.ellipse((xi-Rrec, yi-Rrec, xi+Rrec, yi+Rrec), fill=(200, 40, 40)) # red if activated
+			else:
+				r,g,b = ans_img.getpixel((xi, yi))
+				draw.ellipse((xi-Rrec, yi-Rrec, xi+Rrec, yi+Rrec), fill=(max(40,r-4), min(150,g+4), min(150,g+4))) # gradually turn green again
+				
+	frames.append(np.array(img))
 
+# generate gif
 
-def animate(i):
-	print('frame : ', i)
-	for j in range(naff):
-		lines[j].set_data(x[max(0,i-5):i, j], y[max(0,i-5):i, j])
-	return lines
-
-
-
-anim = animation.FuncAnimation(fig, animate, init_func=init, frames=2000, interval=5, blit=True)
-
-plt.show()
-
-
+frames = frames + frames[::-1]
+imageio.mimsave('movie.gif', frames, fps=20)

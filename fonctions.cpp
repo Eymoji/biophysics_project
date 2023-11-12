@@ -35,3 +35,7 @@ double norm2(double x, double y) {
     double n = x*x+y*y;
     return n;
 }
+
+double theta(double x, double y){
+    return atan(y/x);
+}

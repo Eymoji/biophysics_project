@@ -5,6 +5,7 @@
 #include<cmath>
 #include<random>
 #include<vector>
+#include <chrono>
 #include"receptor.h"
 #include"chemo.h"
 #include"fonctions.h"
@@ -20,21 +21,21 @@ int main() {
 
     //Properties of chemoattractants
     int Nchemo;                         //Number of chemoattractants in the system
-    double D1 = 3;                      //Diffusion coefficient in the volume
+    double D1 = 10;                      //Diffusion coefficient in the volume
     double D2 = 1;                      //Diffusion coefficient on the surface of the cell
-    double cinf = 0.002;                //Concentration at long distance
+    double cinf = 0.05;                  //Concentration at long distance
 
     //Properties of receptors
-    double Rrec = 2;                    //Receptors radius
-    int Nrec = 30;                     //Number of receptors
+    double Rrec = 3;                    //Receptors radius
+    int Nrec = 60;                     //Number of receptors
 
     //Properties of the ambient medium
-    double eta = 0;                     //Viscosity of the medium
+    double eta = 0.2;                     //Viscosity of the medium
 
     //Hyperparameters
     double dt = 0.1;                    //Time interval between two iterations
-    double time_max = 50;               //Simulation time
-    double L = 2000;                    //Simulation length on each axis
+    double time_max = 200;               //Simulation time
+    double L = 400;                    //Simulation length on each axis
 
     //Save parameters
     ofstream parameters("data/param.csv");
@@ -64,13 +65,8 @@ int main() {
     ofstream coordinate_x("data/x.txt");
     ofstream coordinate_y ("data/y.txt");
     ofstream nbr_absorption ("data/nbr_absorption.txt");
-    nbr_absorption << "time/receptor ";
-    for (int i = 0; i < Nchemo; i++)
-        nbr_absorption << to_string(i) << " ";    //The first line of file gives us the name of receptor//
-    nbr_absorption << endl;
 
     //We write the coordinates of molecules during the first iteration
-    nbr_absorption << 0 << " ";                   //The first column of file gives us the time//
     for (int i = 0; i < Nrec; i++) {
         nbr_absorption << receptor_vector[i].n << " ";
     }
@@ -78,29 +74,33 @@ int main() {
 
 
     /** EVOLUTION TIME **/
-
+    auto rt0 = std::chrono::high_resolution_clock::now();
     for (int t=0; t<=time_max/dt; t++) {
-        cout << "Progression : " << 100 * t * dt / time_max << " %" << "\r";
+        if(int(1000 * t * dt / time_max) % 10 == 0) {
+            cout << "Progression : " << int(100 * t * dt / time_max) << " %";
 
-        //For each receptor:
-        for(int i = 0; i < Nrec; i++)
-            // Test if it absorbs a molecule, if so, is activated and the molecule ii randomly replaced
-            receptor_vector[i].absorption(chemo_vector, L);
-
-        //For each molecule:
-        for(int i = 0; i < Nchemo; i++) {
-
-            //We compute the new velocity while the molecule doesn't enter the bacterium
-            do {
-                chemo_vector[i].diffusion_langevin(eta, dt);
-            } while (chemo_vector[i].in_the_cell(Rcell, L));
-
-            //We update the position of the molecule
-            chemo_vector[i].update_position(dt);
-
-            //We keep it on the surface
-            chemo_vector[i].boundary_conditions(L);
+            auto rt = std::chrono::high_resolution_clock::now();
+            auto rt_past = std::chrono::duration_cast<std::chrono::microseconds>(rt - rt0);
+            auto rt_future = 1.e-6 * rt_past.count() * (1 - t * dt / time_max) / (t * dt / time_max);
+            cout << "\tTemps restant estime : " << int(rt_future) << " secondes          " << "\r";
         }
+
+        //Each molecule: We compute the new velocity and update the position of the molecule
+        for(int i = 0; i < Nchemo; i++) {
+            chemo_vector[i].diffusion_langevin(eta, dt);
+            chemo_vector[i].update_position(dt);
+        }
+
+        //Each receptor absorbs a molecule, if so, it is activated and the molecule is randomly replaced
+        for(int i = 0; i < Nrec; i++){
+            receptor_vector[i].absorption(chemo_vector, L);
+            nbr_absorption << receptor_vector[i].n << " ";
+        }
+        nbr_absorption << endl;
+
+        //Each molecule: We keep it on the map, outside the cell
+        for(int i = 0; i < Nchemo; i++)
+            chemo_vector[i].boundary_conditions(L,Rcell);
 
 
         for (int i = 0; i < Nchemo; i++) {
@@ -109,12 +109,6 @@ int main() {
         }
         coordinate_x << endl;
         coordinate_y << endl;
-
-        //We write the number of molecules absorbed by each receptor until this iteration
-        for (int i = 0; i < Nrec; i++)
-            nbr_absorption << receptor_vector[i].n << " ";
-        nbr_absorption << endl;
-
     }
 
     //We close our files to save data

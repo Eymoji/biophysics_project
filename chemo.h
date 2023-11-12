@@ -34,7 +34,7 @@ public:
     void absorbed(const vector<receptor>& detection_system, double s, double a, double L);
 
     //Boundary conditions
-    void boundary_conditions(double L);
+    void boundary_conditions(double L, double Rcell);
 
     //Update of position
     bool in_the_cell(double a, double Taillesurface) const;
