@@ -39,3 +39,17 @@ double norm2(double x, double y) {
 double theta(double x, double y){
     return atan(y/x);
 }
+
+double titled_distribution(double Xmin, double Xmax, double x0, double ratio, double sigma){
+    double x, c;
+
+    do {
+        x = distf(engf); // uniform distribution [0,1]
+        c = distf(engf);
+    } while (c < ratio + (1-ratio) * cos((x-x0)/(2*M_PI*sigma)));
+
+    x = (Xmax-Xmin) * x + Xmin;
+    return x;
+}
+
+

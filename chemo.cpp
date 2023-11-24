@@ -1,30 +1,29 @@
 #include "chemo.h"
 using namespace std;
 
-chemo::chemo() {
-    x = 0;
-    y = 0;
-    vx = 0;
-    vy = 0;
-    D1 = 0;
-    D2 = 0;
-}
+chemo::chemo()= default;
 
-
-chemo::chemo(double Taillesurface, double a, double D, double D_prime) {
+chemo::chemo(double Lx0, double Ly0, double a, double D, double D_prime) {
     //We randomly initialize the position of the chemo on the surface, outside of the bacterium, and set their initial velocity to 0
-    do {
-        x = uniform_distribution(0, Taillesurface);
-        y = uniform_distribution(0, Taillesurface);
-    } while (norm2(x - Taillesurface/2, y - Taillesurface/2) < a*a);
+    Lx = Lx0;
+    Ly = Ly0;
+    Rcell = a;
 
-    vx = 0;
-    vy = 0;
+    reset_chemo();
 
     D1 = D;
     D2 = D_prime;
 }
 
+void chemo::reset_chemo(){
+    do {
+        x = titled_distribution(0, Lx, 0.8, 0.5, 1.);
+        y = titled_distribution(0, Ly, 0.8, 0.5, 1.);
+    } while (in_the_cell(Rcell) or x<0 or x>Lx or y<0 or y>Ly);
+
+    vx = 0;
+    vy = 0;
+};
 
 chemo::~chemo() = default;
 
@@ -47,9 +46,8 @@ void chemo::diffusion_langevin(double eta, double dt) {
 }
 
 
-bool chemo::in_the_cell(double a, double Taillesurface) const {
-    //This function tests if the molecule is out of the cell in the next iteration
-    return (norm2(x + vx - Taillesurface/2, y + vy - Taillesurface/2) < a*a);
+bool chemo::in_the_cell(double a) const { //Tests if the molecule is in the cell
+    return (norm2(x - Lx/2, y - Ly/2) < a*a);
 }
 
 
@@ -59,19 +57,19 @@ void chemo::update_position(double dt) {
 }
 
 
-void chemo::boundary_conditions(double L, double Rcell) {
+void chemo::boundary_conditions() {
     //We keep all the molecules onr our surface, which is consistent since the medium around the bacterium
     //is considered to be infinite, and we want to keep the same number of molecules in the system.
-    if (x < 0)  x += L;
-    if (x > L)  x -= L;
-    if (y < 0)  y += L;
-    if (y > L)  y -= L;
+    if (x < 0)  x += Lx;
+    if (x > Lx)  x -= Lx;
+    if (y < 0)  y += Ly;
+    if (y > Ly)  y -= Ly;
 
-    if (norm2(x-L/2,y-L/2) < Rcell*Rcell){
-        double xb = Rcell*cos(theta(x-L/2,y-L/2));
-        double yb = Rcell*sin(theta(x-L/2,y-L/2));
-        x = L/2 + xb + (xb - (x-L/2));
-        y = L/2 + yb + (yb - (y-L/2));
+    if (norm2(x-Lx/2,y-Ly/2) < Rcell*Rcell){
+        double xb = Rcell*cos(theta(x-Lx/2,y-Ly/2));
+        double yb = Rcell*sin(theta(x-Lx/2,y-Ly/2));
+        x = Lx/2 + xb + (xb - (x-Lx/2));
+        y = Ly/2 + yb + (yb - (y-Ly/2));
 
     }
 }

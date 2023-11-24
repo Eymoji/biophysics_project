@@ -1,11 +1,9 @@
-#ifndef CHEMO_H
-#define CHEMO_H
+#pragma once
 
-#include<ostream>
-#include<cmath>
-#include<vector>
-#include"receptor.h"
+#include <cmath>
+#include <functional>
 #include"fonctions.h"
+#include<iostream>
 
 using namespace std;
 class receptor;
@@ -14,32 +12,25 @@ class chemo {
 
 public:
 
-    //position//
-    double x, y;
-    
-    //velocity//
-    double vx, vy;
-
-    //diffusion properties//
-    double D1, D2;
-
     chemo();
-    chemo(double Taillesurface, double a, double D1, double D2);
+
+    double x, y;            //position//
+    double vx, vy;          //velocity//
+    double D1, D2;          //diffusion properties//
+    double Lx, Ly, Rcell;   //map properties//
+
+    // Constructor, reset and destructor
+    chemo(double Lx0, double Ly0, double a, double D, double D_prime);
+    void reset_chemo();
     ~chemo();
 
     //Chemo's behaviour
     void diffusion_langevin(double eta, double dt);
-    
-    //Absoprtion of a molecule by a receptor
-    void absorbed(const vector<receptor>& detection_system, double s, double a, double L);
 
     //Boundary conditions
-    void boundary_conditions(double L, double Rcell);
+    void boundary_conditions();
 
     //Update of position
-    bool in_the_cell(double a, double Taillesurface) const;
+    bool in_the_cell(double a) const;
     void update_position(double dt);
 };
-
-
-#endif //BIOPHYSICS_PROJECT_CHEMO_H

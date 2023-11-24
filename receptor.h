@@ -16,21 +16,21 @@ class receptor {
 public:
 
     //position//
-    double x;
-    double y;
+    double x{};
+    double y{};
 
     //radius of chemo//
-    double size;
+    double size{};
 
     //number of molecules absorbed by the the receptor//
-    int n;
+    int n{};
 
     receptor();
-    receptor(double s, double a, double theta, double L);
+    receptor(double s, double a, double theta, double Lx, double Ly);
     ~receptor();
 
     //Absorption of a chemo by a receptor
-    void absorption(vector<chemo>& vector_chemo, double L);
+    void absorption(vector<chemo>& vector_chemo);
     
 };
 

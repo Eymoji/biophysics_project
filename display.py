@@ -2,6 +2,7 @@ import numpy as np
 import csv
 from PIL import Image, ImageDraw
 import imageio
+from concurrent.futures import ThreadPoolExecutor
 
 
 # DATA LOADING
@@ -10,24 +11,23 @@ param = [row for row in csv.DictReader(open("data/param.csv", newline=''))][0]
 param = {key: float(value) for key, value in param.items()}
 
 
-def format(a):
-	a = a.read().split(" \n")[:-1]
-	for i in range(len(a)):
-		a[i] = a[i].split(" ")
-	return np.array(a, dtype=float)
+def format(file_path):
+    with open(file_path, "r") as file:
+        data = np.array([line.split(" ") for line in file.read().split(" \n")[:-1]], dtype=float)
+    return data
 
-x = format(open("data/x.txt", "r"))
-y = format(open("data/y.txt", "r"))
-rec = format(open("data/rec.txt", "r"))
-abs = format(open("data/nbr_absorption.txt", "r"))
-
+x = format("data/x.txt")
+y = format("data/y.txt")
+rec = format("data/rec.txt")
+abs = format("data/nbr_absorption.txt")
+print(abs)
 
 # ANIMATION PARAMETERS
 
-width = height = int(param['L'])
 frames = []
 
-L = param['L']
+width = Lx = int(param['Lx'])
+height = Ly = int(param['Ly'])
 Rcell = param['Rcell']
 Rrec = param['Rrec']
 
@@ -37,40 +37,41 @@ img = Image.new('RGB', (width, height), color='black')		# Create a default image
 
 # ANIMATION GENERATION
 
-for time in range(nt):
+def generate_frame(time):
 	print('frame : ', time, '/', nt, end='\r')
 
-	ans_img = img
 	img = Image.new('RGB', (width, height), color='black')
 	draw = ImageDraw.Draw(img)
 
 	# draw the cell
-	draw.ellipse((L/2-Rcell, L/2-Rcell, L/2+Rcell, L/2+Rcell), fill=(0, 30, 30))
- 
+	draw.ellipse((Lx / 2 - Rcell, Ly / 2 - Rcell, Lx / 2 + Rcell, Ly / 2 + Rcell), fill=(0, 30, 30))
+
 	# draw the chemoattractants
 	for part in range(naff):
 		xi = int(x[time, part])
 		yi = int(y[time, part])
-		if xi < width and yi < height:
-			r,g,b = img.getpixel((xi, yi))
-			img.putpixel((xi, yi), (r+40, g+40, 200))
+		if 0 <= xi < width and 0 <= yi < height:
+			r, g, b = img.getpixel((xi, yi))
+			img.putpixel((xi, yi), (r + 40, g + 40, 200))
 
 	# draw the receptors
 	for i in range(len(rec)):
-		xi = int(rec[i][0])
-		yi = int(rec[i][1])
-		if xi < width and yi < height:
-			if time==0:
-				draw.ellipse((xi-Rrec, yi-Rrec, xi+Rrec, yi+Rrec), fill=(40, 150, 150)) # green initially
-			elif abs[time,i] > 0.5:
-				draw.ellipse((xi-Rrec, yi-Rrec, xi+Rrec, yi+Rrec), fill=(200, 40, 40)) # red if activated
-			else:
-				r,g,b = ans_img.getpixel((xi, yi))
-				draw.ellipse((xi-Rrec, yi-Rrec, xi+Rrec, yi+Rrec), fill=(max(40,r-4), min(150,g+4), min(150,g+4))) # gradually turn green again
-				
-	frames.append(np.array(img))
+		xi, yi = rec[i, 0], rec[i, 1]
+		if 0 <= xi < width and 0 <= yi < height:
+			draw.ellipse((xi - Rrec, yi - Rrec, xi + Rrec, yi + Rrec), fill=(40, 150, 150))
+			for ip in range(10):
+				if abs[time-ip, i] > 0.5:
+					r = int(40 + (200-40)*(10-ip)/10)
+					g = int(150 + (40-150)*(10-ip)/10)
+					b = int(150 + (40-150)*(10-ip)/10)
+					draw.ellipse((xi - Rrec, yi - Rrec, xi + Rrec, yi + Rrec), fill=(r,g,b))
+					break
+	return np.array(img)
 
-# generate gif
+# generate frames concurrently
+with ThreadPoolExecutor() as executor:
+    frames = list(executor.map(generate_frame, range(2,nt)))
 
-frames = frames + frames[::-1]
-imageio.mimsave('movie.gif', frames, fps=20)
+with imageio.get_writer('Static_cell_catching_chemo.mp4', format='FFMPEG', fps=20) as writer:
+    for frame in frames:
+        writer.append_data(frame)
