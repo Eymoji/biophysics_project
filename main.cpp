@@ -17,8 +17,8 @@ int main() {
     //Hyperparameters
     const double dt = 0.1;                    //Time interval between two iterations
     const double time_max = 20;               //Simulation time
-    const double Lx = 800;                    //Simulation length on each axis
-    const double Ly = 600;
+    const double Lx = 400;                    //Simulation length on each axis
+    const double Ly = 400;
 
     //Properties of the cell
     const double Rcell = 100;                 //cell radius
@@ -26,7 +26,7 @@ int main() {
     //Properties of chemoattractants
     const double D1 = 100;                     //Diffusion coefficient in the volume
     const double D2 = 1;                      //Diffusion coefficient on the surface of the cell
-    const double cinf = 0.01;                  //Concentration at long distance
+    const double cinf = 0.05;                  //Concentration at long distance
     const int Nchemo = int(cinf * Lx * Ly);   //Number of chemoattractants in the system
 
     //Properties of receptorss
