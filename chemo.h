@@ -20,7 +20,7 @@ public:
     double Lx, Ly, Rcell;   //map properties//
 
     // Constructor, reset and destructor
-    chemo(double Lx0, double Ly0, double a, double D, double D_prime);
+    chemo(double Lx0, double Ly0, double a, double D, double D_prime, const std::vector<double>& W);
     void reset_chemo();
     ~chemo();
 
@@ -32,5 +32,5 @@ public:
 
     //Update of position
     bool in_the_cell(double a) const;
-    void update_position(double dt);
+    void update_position(double dt, double dX, double dY);
 };

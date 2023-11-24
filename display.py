@@ -20,7 +20,6 @@ x = format("data/x.txt")
 y = format("data/y.txt")
 rec = format("data/rec.txt")
 abs = format("data/nbr_absorption.txt")
-print(abs)
 
 # ANIMATION PARAMETERS
 
@@ -37,8 +36,9 @@ img = Image.new('RGB', (width, height), color='black')		# Create a default image
 
 # ANIMATION GENERATION
 
+print(' ')
 def generate_frame(time):
-	print('frame : ', time, '/', nt, end='\r')
+	print('Generation of frame ', time, ' / ', nt, end='\r')
 
 	img = Image.new('RGB', (width, height), color='black')
 	draw = ImageDraw.Draw(img)

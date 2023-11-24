@@ -7,6 +7,7 @@
 #include <chrono>
 #include"receptor.h"
 #include"chemo.h"
+#include <cstdlib>
 
 using namespace std;
 
@@ -17,21 +18,23 @@ int main() {
     //Hyperparameters
     const double dt = 0.1;                    //Time interval between two iterations
     const double time_max = 20;               //Simulation time
-    const double Lx = 400;                    //Simulation length on each axis
-    const double Ly = 400;
+    const double Lx = 600;                    //Simulation length on each axis
+    const double Ly = 600;
 
     //Properties of the cell
     const double Rcell = 100;                 //cell radius
+    const double VXcell = 1.0;                //cell speed
+    const double VYcell = 1.0;
 
     //Properties of chemoattractants
     const double D1 = 100;                     //Diffusion coefficient in the volume
     const double D2 = 1;                      //Diffusion coefficient on the surface of the cell
-    const double cinf = 0.05;                  //Concentration at long distance
+    const double cinf = 0.1;                  //Concentration at long distance
     const int Nchemo = int(cinf * Lx * Ly);   //Number of chemoattractants in the system
 
     //Properties of receptorss
-    const double Rrec = 3;                    //Receptors radius
-    const int Nrec = 60;                      //Number of receptors
+    const double Rrec = 5;                    //Receptors radius
+    const int Nrec = 25;                      //Number of receptors
 
     //Properties of the ambient medium
     const double eta = 0.1;                   //Viscosity of the medium
@@ -45,10 +48,13 @@ int main() {
 
     /** INITIALISATION **/
 
+    //Generation of the random map parameters
+    vector<double> W = random_landscape_initializer();
+
     //Creation of a vector of chemoattractants
     vector<chemo> chemo_vector (Nchemo);
     for(int i = 0; i < Nchemo; i++)
-        chemo_vector[i] = chemo (Lx, Ly, Rcell, D1, D2);
+        chemo_vector[i] = chemo (Lx, Ly, Rcell, D1, D2, W);
 
     //Creation of a vector of receptors (they are only points with two coordinates and size Rrec)
     vector<receptor> receptor_vector (Nrec);
@@ -84,7 +90,7 @@ int main() {
         //Each molecule: We compute the new velocity and update the position of the molecule
         for(int i = 0; i < Nchemo; i++) {
             chemo_vector[i].diffusion_langevin(eta, dt);
-            chemo_vector[i].update_position(dt);
+            chemo_vector[i].update_position(dt, VXcell*dt, VYcell*dt);
         }
 
         //Each receptor absorbs a molecule, if so, it is activated and the molecule is randomly replaced
@@ -113,5 +119,6 @@ int main() {
     nbr_absorption.close();
     coord_receptor.close();
 
+    system("python display.py");
     return 0;
 }

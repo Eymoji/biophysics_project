@@ -17,9 +17,11 @@ receptor::~receptor() = default;
 
 void receptor::absorption(vector<chemo>& vector_chemo) {
     n = 0;
-    for (auto & c : vector_chemo)
-        if (norm2(c.x - x, c.y - y) < size*size) {
-            n += 1;
-            c.reset_chemo();
+    for (auto & chem : vector_chemo)
+        if (norm2(chem.x - x, chem.y - y) < size*size) {
+            n += 1; // Count of receptor activations
+
+            chem.reset_chemo(); // Replacement of the particle at a random place
+            // TO MODIFY
         }
 }
