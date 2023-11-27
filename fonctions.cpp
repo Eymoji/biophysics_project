@@ -101,4 +101,3 @@ vector<double> random_landscape_distribution(double Lx, double Ly, const vector<
     return w;
 }
 
-

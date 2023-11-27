@@ -25,12 +25,16 @@ public:
     //number of molecules absorbed by the the receptor//
     int n{};
 
+    //Average time a molecule remains bonded to a receptor when absorbed
+    double Tau_B{};
+
     receptor();
-    receptor(double s, double a, double theta, double Lx, double Ly);
+    receptor(double s, double a, double theta, double Lx, double Ly, double Tau);
     ~receptor();
 
     //Absorption of a chemo by a receptor
     void absorption(vector<chemo>& vector_chemo);
+    void release(double Lx0, double Ly0, double a, double D, double D_prime, double dt, vector<chemo>& vector_chemo);
     
 };
 

@@ -24,6 +24,33 @@ chemo::chemo(double Lx0, double Ly0, double a, double D, double D_prime, const v
     D2 = D_prime;
 }
 
+//Initializer of a molecule released by a receptor
+chemo::chemo(double Lx0, double Ly0, double a, double D, double D_prime, double x_rec, double y_rec, double r_rec, double dt) {
+    Lx = Lx0;
+    Ly = Ly0;
+    Rcell = a;
+
+    D1 = D;
+    D2 = D_prime;
+
+    double theta_rec = theta(x_rec, y_rec);
+    double theta_release = uniform_distribution(M_PI/2., M_PI/2.) + theta_rec;
+    
+    cout << a << " " << theta_rec << endl;
+    cout << r_rec << " " << theta_release << endl;
+
+    x = Lx0/2. + a*cos(theta_rec) + 1.1*r_rec*cos(theta_release);
+    y = Ly0/2. + a*sin(theta_rec) + 1.1*r_rec*sin(theta_release);
+    
+    cout << theta_rec << " " << cos(theta_rec) << " " << theta_release << " " << cos(theta_release) << endl;
+
+    cout << x << endl;
+    cout << y << endl << endl;
+	
+    vx = D*dt*cos(theta_release);
+    vy = D*dt*sin(theta_release);
+}
+
 void chemo::reset_chemo(){
     do {
         x = uniform_distribution(0, Lx);
@@ -76,7 +103,7 @@ void chemo::boundary_conditions() {
     if (y < 0)  y += Ly;
     if (y > Ly)  y -= Ly;
 
-    if (norm2(x-Lx/2,y-Ly/2) < Rcell*Rcell){
+    if (norm2(x-Lx/2.,y-Ly/2.) < Rcell*Rcell){
         double xb = Rcell*cos(theta(x-Lx/2,y-Ly/2));
         double yb = Rcell*sin(theta(x-Lx/2,y-Ly/2));
         x = Lx/2 + xb + (xb - (x-Lx/2));
