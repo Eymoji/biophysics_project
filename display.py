@@ -1,5 +1,5 @@
 import numpy as np
-import csv
+import methods as m
 from PIL import Image, ImageDraw
 import imageio
 from concurrent.futures import ThreadPoolExecutor
@@ -7,19 +7,11 @@ from concurrent.futures import ThreadPoolExecutor
 
 # DATA LOADING
 
-param = [row for row in csv.DictReader(open("data/param.csv", newline=''))][0]
-param = {key: float(value) for key, value in param.items()}
-
-
-def format(file_path):
-    with open(file_path, "r") as file:
-        data = np.array([line.split(" ") for line in file.read().split(" \n")[:-1]], dtype=float)
-    return data
-
-x = format("data/x.txt")
-y = format("data/y.txt")
-rec = format("data/rec.txt")
-abs = format("data/nbr_absorption.txt")
+param = m.format_dict("data/param.csv")
+x = m.format("data/x.txt")
+y = m.format("data/y.txt")
+rec = m.format("data/rec.txt")
+abs = m.format("data/nbr_absorption.txt")
 
 # ANIMATION PARAMETERS
 
@@ -36,7 +28,6 @@ img = Image.new('RGB', (width, height), color='black')		# Create a default image
 
 # ANIMATION GENERATION
 
-print(' ')
 def generate_frame(time):
 	print('Generation of frame ', time, ' / ', nt, end='\r')
 
