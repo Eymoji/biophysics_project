@@ -35,17 +35,9 @@ chemo::chemo(double Lx0, double Ly0, double a, double D, double D_prime, double 
 
     double theta_rec = theta(x_rec, y_rec);
     double theta_release = uniform_distribution(M_PI/2., M_PI/2.) + theta_rec;
-    
-    cout << a << " " << theta_rec << endl;
-    cout << r_rec << " " << theta_release << endl;
 
-    x = Lx0/2. + a*cos(theta_rec) + 1.1*r_rec*cos(theta_release);
-    y = Ly0/2. + a*sin(theta_rec) + 1.1*r_rec*sin(theta_release);
-    
-    cout << theta_rec << " " << cos(theta_rec) << " " << theta_release << " " << cos(theta_release) << endl;
-
-    cout << x << endl;
-    cout << y << endl << endl;
+    x = x_rec + 1.1*r_rec*cos(theta_release);
+    y = y_rec + 1.1*r_rec*sin(theta_release);
 	
     vx = D*dt*cos(theta_release);
     vy = D*dt*sin(theta_release);
