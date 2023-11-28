@@ -1,4 +1,5 @@
 import numpy as np
+import methods as m
 import csv
 from PIL import Image, ImageDraw
 import imageio
@@ -7,18 +8,10 @@ from concurrent.futures import ThreadPoolExecutor
 
 # DATA LOADING
 
-param = [row for row in csv.DictReader(open("data/param.csv", newline=''))][0]
-param = {key: float(value) for key, value in param.items()}
-
-
-def format(file_path):
-    with open(file_path, "r") as file:
-        data = np.array([line.split(" ") for line in file.read().split(" \n")[:-1]], dtype=float)
-    return data
+param = m.format_dict("data/param.csv")
 
 x = np.genfromtxt('data/x.txt', delimiter=' ', dtype=float, missing_values='NaN', filling_values=np.nan)
 y = np.genfromtxt('data/y.txt', delimiter=' ', dtype=float, missing_values='NaN', filling_values=np.nan)
-print(x)
 rec = np.genfromtxt('data/rec.txt', delimiter=' ', dtype=float)
 abs = np.genfromtxt('data/nbr_absorption.txt', delimiter=' ', dtype=int)
 

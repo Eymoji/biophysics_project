@@ -82,16 +82,17 @@ int main() {
         if(int(1000 * t * dt / time_max) % 10 == 0) {
             cout << "Progression : " << int(100 * t * dt / time_max) << " %";
 
-            auto rt = std::chrono::high_resolution_clock::now();
-            auto rt_past = std::chrono::duration_cast<std::chrono::microseconds>(rt - rt0);
+            auto rt = chrono::high_resolution_clock::now();
+            auto rt_past = chrono::duration_cast<chrono::microseconds>(rt - rt0);
             auto rt_future = 1.e-6 * rt_past.count() * (1 - t * dt / time_max) / (t * dt / time_max);
+
             cout << "\tTemps restant estime : " << int(rt_future) << " secondes          " << "\r";
         }
 
         //Each molecule: We compute the new velocity and update the position of the molecule
-        for(unsigned int i = 0; i < chemo_vector.size(); i++) {
-            chemo_vector[i].diffusion_langevin(eta, dt);
-            chemo_vector[i].update_position(dt, VXcell*dt, VYcell*dt);
+        for(chemo & c : chemo_vector) {
+            c.diffusion_langevin(eta, dt);
+            c.update_position(dt, VXcell*dt, VYcell*dt);
         }
 
         //Each receptor absorbs a molecule, if so, it can release it in the medium with a rate 1/Tau_B
@@ -103,18 +104,17 @@ int main() {
         nbr_absorption << endl;
 
         //Each molecule: We keep it on the map, outside the cell
-        for(unsigned int i = 0; i < chemo_vector.size(); i++)
-            chemo_vector[i].boundary_conditions();
-
-
-        for (unsigned int i = 0; i < chemo_vector.size(); i++) {
-            coordinate_x << chemo_vector[i].x << " ";
-            coordinate_y << chemo_vector[i].y << " ";
+        for (chemo & c : chemo_vector) {
+            c.boundary_conditions();
+            coordinate_x << c.x << " ";
+            coordinate_y << c.y << " ";
         }
+
         for (int i = chemo_vector.size(); i < Nchemo; i++) {
             coordinate_x << "NaN" << " ";
             coordinate_y << "NaN" << " ";
         }
+
         coordinate_x << endl;
         coordinate_y << endl;
     }
