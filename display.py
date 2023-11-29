@@ -53,14 +53,13 @@ def generate_frame(time):
     for i in range(len(rec)):
         xi, yi = rec[i, 0], rec[i, 1]
         if 0 <= xi < width and 0 <= yi < height:
-            draw.ellipse((xi - Rrec, yi - Rrec, xi + Rrec, yi + Rrec), fill=(40, 150, 150))
-            for ip in range(10):
-                if abs[time-ip, i] > 0.5:
-                    r = int(40 + (200-40)*(10-ip)/10)
-                    g = int(150 + (40-150)*(10-ip)/10)
-                    b = int(150 + (40-150)*(10-ip)/10)
-                    draw.ellipse((xi - Rrec, yi - Rrec, xi + Rrec, yi + Rrec), fill=(r,g,b))
-                    break
+            
+            ip = np.sum(abs[time, i])
+            r = int(40 + (200-40)*(ip)/5)
+            g = int(150 + (40-150)*(ip)/5)
+            b = int(150 + (40-150)*(ip)/5)
+            draw.ellipse((xi - Rrec, yi - Rrec, xi + Rrec, yi + Rrec), fill=(r,g,b))
+            
     return np.array(img)
 
 # generate frames concurrently
