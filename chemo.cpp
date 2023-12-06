@@ -77,13 +77,19 @@ bool chemo::in_the_cell(double a) const { //Tests if the molecule is in the cell
 }
 
 
-void chemo::update_position(double dt, double dX, double dY) {
+void chemo::update_position(double dt, double VxCell, double VyCell) {
     x = x + vx*dt;
     y = y + vy*dt;
 
-    // relative cell movement
-    x = x + dX;
-    y = y + dY;
+    // relative cell movement : stokes regime
+    double r = norm(x-Lx/2,y-Ly/2);
+    double th = theta(x-Lx/2,y-Ly/2);
+    double thV = theta(VxCell,VyCell);
+    double v0 = norm(VxCell,VyCell);
+    double vr = - v0 * cos(th) * (1 - (3*Rcell)/(2*r) + (Rcell*Rcell*Rcell)/(2*r*r*r));
+    double vth = v0 * sin(th) * (1 - (3*Rcell)/(4*r) - (Rcell*Rcell*Rcell)/(4*r*r*r));
+    x = x + (vr*cos(th-thV) - vth*sin(th-thV))*dt;
+    y = y + (vr*sin(th-thV) + vth*cos(th-thV))*dt;
 }
 
 

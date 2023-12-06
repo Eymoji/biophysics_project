@@ -33,5 +33,5 @@ public:
 
     //Update of position
     bool in_the_cell(double a) const;
-    void update_position(double dt, double dX, double dY);
+    void update_position(double dt, double VxCell, double VyCell);
 };
