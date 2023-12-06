@@ -81,7 +81,7 @@ vector<double> random_landscape_distribution(double Lx, double Ly, const vector<
         for (int i = 0; i < Nw; ++i) {
             double dx = periodic_dx(x,W[i],1);
             double dy = periodic_dx(y,W[Nw+i],1);
-            double r0 = W[2*Nw+i]/10;
+            double r0 = W[2*Nw+i]/3;
             double a0 = W[3*Nw+i];
 
             f += a0*exp(-(dx*dx+dy*dy)/(2*r0*r0));

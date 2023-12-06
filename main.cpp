@@ -15,26 +15,27 @@ int main() {
 
     /** PARAMETERS **/
 
-    //Hyperparameters
+    //Hyper-parameters
     const double dt = 0.1;                      //Time interval between two iterations
     const double time_max = 50;                 //Simulation time
-    const double Lx = 600;                      //Simulation length on each axis
-    const double Ly = 600;
+    const double Lx = 40*16;                      //Simulation length on each axis
+    const double Ly = 40*16;
+    const int BatchSize = 20;
 
     //Properties of the cell
-    const double Rcell = 100;                   //cell radius
-    const double VXcell = 0;                  //cell speed
+    const double Rcell = 80;                   //cell radius
+    const double VXcell = 0;                    //cell speed
     const double VYcell = 0;
 
     //Properties of chemoattractants
-    const double D1 = 1;                      //Diffusion coefficient in the volume
+    const double D1 = 1;                        //Diffusion coefficient in the volume
     const double D2 = 1;                        //Diffusion coefficient on the surface of the cell
-    const double cinf = 0.02;                    //Concentration at long distance
+    const double cinf = 0.05;                   //Concentration at long distance
     const int Nchemo = int(cinf * Lx * Ly);     //Number of chemoattractants in the system
 
-    //Properties of receptorss
+    //Properties of receptors
     const double Rrec = 5;                      //Receptors radius
-    const int Nrec = 25;                        //Number of receptors
+    const int Nrec = M_PI*Rcell/Rrec;           //Number of receptors
     const double Tau_B = 3.;                    //Average time a receptor keeps a captured molecule
 
     //Properties of the ambient medium
@@ -76,9 +77,13 @@ int main() {
     nbr_absorption << endl;
 
 
+
+    vector<vector<double>> Batch_absorptions(BatchSize, std::vector<double>(Nrec));
+
     /** EVOLUTION TIME **/
-    auto rt0 = std::chrono::high_resolution_clock::now();
+    auto rt0 = chrono::high_resolution_clock::now();
     for (int t=0; t<=time_max/dt; t++) {
+        // TIME COUNTER
         if(int(1000 * t * dt / time_max) % 10 == 0) {
             cout << "Progression : " << int(100 * t * dt / time_max) << " %";
 
@@ -89,31 +94,49 @@ int main() {
             cout << "\tTemps restant estime : " << int(rt_future) << " secondes          " << "\r";
         }
 
-        //Each molecule: We compute the new velocity and update the position of the molecule
+        // MOLECULES EVOLUTION : compute new velocities and positions
         for(chemo & c : chemo_vector) {
             c.diffusion_langevin(eta, dt);
             c.update_position(dt, VXcell*dt, VYcell*dt);
-        }
-
-        //Each receptor absorbs a molecule, if so, it can release it in the medium with a rate 1/Tau_B
-        for(int i = 0; i < Nrec; i++){
-            receptor_vector[i].release(Lx, Ly, Rcell, D1, D2, dt, chemo_vector);
-            receptor_vector[i].absorption(chemo_vector);
-            nbr_absorption << receptor_vector[i].n << " ";
-        }
-        nbr_absorption << endl;
-
-        //Each molecule: We keep it on the map, outside the cell
-        for (chemo & c : chemo_vector) {
             c.boundary_conditions();
-            coordinate_x << c.x << " ";
-            coordinate_y << c.y << " ";
         }
 
-        for (int i = chemo_vector.size(); i < Nchemo; i++) {
-            coordinate_x << "NaN" << " ";
-            coordinate_y << "NaN" << " ";
+        // RECEPTOR EVOLUTION : Release (with a rate 1/Tau_B), absorb, count molecules absorbed by each receptor
+        for(int r = 0; r < Nrec; r++){
+            receptor_vector[r].release(Lx, Ly, Rcell, D1, D2, dt, chemo_vector);
+            receptor_vector[r].absorption(chemo_vector);
+            Batch_absorptions[((t) % BatchSize)][r] = receptor_vector[r].n;
         }
+//        cout << "((t) % BatchSize) = " << ((t) % BatchSize) << endl;
+
+        /** SAVES **/
+
+        if(((t+1) % BatchSize)==0){
+//            cout << "SAVE ---- ((t+1) % BatchSize) = " << ((t+1) % BatchSize) << endl;
+
+            // INSERT HERE CELL EVOLUTION
+
+
+            // RECEPTOR SAVE : n
+            for (int i = 0; i < BatchSize; ++i) {
+                for(int r = 0; r < Nrec; r++){
+                    nbr_absorption << Batch_absorptions[i][r] << " ";
+                }
+                nbr_absorption << endl;
+            }
+        }
+
+        // FREE MOLECULE SAVE : x, y
+        for (chemo & c : chemo_vector) {
+            coordinate_x << int(c.x) << " ";
+            coordinate_y << int(c.y) << " ";
+        }
+
+//         CAPTURED MOLECULE SAVE : Nan, Nan
+//        for (int i = chemo_vector.size(); i < Nchemo; i++) {
+//            coordinate_x << "NaN" << " ";
+//            coordinate_y << "NaN" << " ";
+//        }
 
         coordinate_x << endl;
         coordinate_y << endl;
@@ -124,7 +147,5 @@ int main() {
     coordinate_y.close();
     nbr_absorption.close();
     coord_receptor.close();
-
-    //system("python display.py");
     return 0;
 }
