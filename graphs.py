@@ -1,5 +1,7 @@
 import methods as m
 import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
 
 param = m.format_dict("data/param.csv")
 
@@ -23,4 +25,42 @@ receptors_coordinate = np.genfromtxt('data/rec.txt', delimiter=' ', dtype=float)
 
 number_of_absorption = np.genfromtxt('data/nbr_absorption.txt', delimiter=' ', dtype=int)
 # Numpy Matrix containing the number of chemoattractants absorbed by each receptor (columns) at each time step (lines)
+
+
+
+
+# Plot the average number of chemoattractants absorbed by each receptor as a function of time
+
+plt.figure(1)
+plt.plot(np.arange(0, time_max+dt, dt), np.mean(number_of_absorption, axis = 1))
+plt.xlabel('time')
+plt.ylabel('Average number of chemoattractants absorbed by each receptor')
+plt.title('Average number of chemoattractants absorbed by each receptor as a function of time')
+plt.show()
+plt.close()
+
+# do the same but with the standard deviation
+
+plt.figure(2)
+plt.plot(np.arange(0, time_max+dt, dt), np.std(number_of_absorption, axis = 1))
+plt.xlabel('time')
+plt.ylabel('Standard deviation of the number of chemoattractants absorbed by each receptor')
+plt.title('Standard deviation of the number of chemoattractants absorbed by each receptor as a function of time')
+plt.show()
+plt.close()
+
+# plot rolling average of the number of chemoattractants absorbed by each receptor as a function of time
+
+plt.figure(3)
+plt.plot(np.arange(0, time_max+dt, dt), np.mean(number_of_absorption, axis = 1), label = 'Average')
+plt.plot(np.arange(0, time_max+dt, dt), pd.Series(np.mean(number_of_absorption, axis = 1)).rolling(window=1000).mean(), label = 'Rolling average')
+plt.xlabel('time')
+plt.ylabel('Average number of chemoattractants absorbed by each receptor')
+plt.title('Average number of chemoattractants absorbed by each receptor as a function of time')
+plt.legend()
+plt.show()
+plt.close()
+
+# find at each time step the receptor that absorbed the most chemoattractants
+i_max = np.argmax(number_of_absorption, axis = 1)
 

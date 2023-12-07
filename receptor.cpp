@@ -27,7 +27,7 @@ void receptor::absorption(vector<chemo>& vector_chemo) {
             // Effacer l'élément du vecteur
             chemo = vector_chemo.erase(chemo);
         }
-        
+
         else {
             // Passer à l'élément suivant
             ++chemo;

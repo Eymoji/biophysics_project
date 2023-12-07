@@ -19,18 +19,18 @@ int main() {
     const double dt = 0.1;                        //Time interval between two iterations
     const int BatchSize = 20;
     const double time_max = dt*BatchSize*10;      //Simulation time
-    const double Lx = 40*16;                      //Simulation length on each axis
-    const double Ly = 40*16;
+    const double Lx = 50*16;                      //Simulation length on each axis
+    const double Ly = 50*16;
 
     //Properties of the cell
-    const double Rcell = 100;                   //cell radius
-    const double VXcell = 10;                    //cell speed
-    const double VYcell = 10;
+    const double Rcell = 120;                   //cell radius
+    const double VXcell = 0;                    //cell speed
+    const double VYcell = 0;
 
     //Properties of chemoattractants
     const double D1 = 1;                        //Diffusion coefficient in the volume
     const double D2 = 1;                        //Diffusion coefficient on the surface of the cell
-    const double cinf = 0.03;                   //Concentration at long distance
+    const double cinf = 0.03;                    //Concentration at long distance
     const int Nchemo = int(cinf * Lx * Ly);     //Number of chemoattractants in the system
 
     //Properties of receptors
