@@ -47,19 +47,20 @@ def generate_frame(time):
     # draw the cell
     draw.ellipse((Lx / 2 - Rcell, Ly / 2 - Rcell, Lx / 2 + Rcell, Ly / 2 + Rcell), fill=(1, 30, 30))
 
-    # load the chemoattractants coordinates for the current time
+    # load the chemoattractants coordinates for the current time (loading the whole x and y matrixes all at once is
+    # impossible because of memory limitations, I went to 1 GB by file)
     x = m.open_txt_line(time, 'data/x.txt')
     y = m.open_txt_line(time, 'data/y.txt')
 
     # draw the chemoattractants
     for chemo in range(len(x)):
-        # if np.isnan(x[part]) == False:
-        xi = x[chemo]
-        yi = y[chemo]
-        
-        if 0 <= xi < width and 0 <= yi < height:
-            r, g, b = img.getpixel((xi, yi))
-            img.putpixel((xi, yi), (0, g + 40, 200))
+        if np.isnan(x[chemo]) == False:
+            xi = x[chemo]
+            yi = y[chemo]
+
+            if 0 <= xi < width and 0 <= yi < height:
+                r, g, b = img.getpixel((xi, yi))
+                img.putpixel((xi, yi), (0, g + 40, 200))
 
     # Vector A : direction of the maximum of chemoattractants
     A = np.zeros(2)

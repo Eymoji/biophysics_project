@@ -17,8 +17,8 @@ int main() {
 
     //Hyper-parameters
     const double dt = 0.1;                        //Time interval between two iterations
-    const int BatchSize = 20;                     //Number of time iterations between two saves of data
-    const double time_max = dt*BatchSize*10;      //Simulation time
+//    const int BatchSize = 20;                   //Number of time iterations between two saves of data
+    const double time_max = 10;                   //Simulation time
     const double Lx = 400;                        //Simulation length on each axis
     const double Ly = 400;
 
@@ -78,7 +78,7 @@ int main() {
 
 
 
-    vector<vector<double>> Batch_absorptions(BatchSize, std::vector<double>(Nrec));
+//    vector<vector<double>> Batch_absorptions(BatchSize, std::vector<double>(Nrec));
 
     /** EVOLUTION TIME **/
     auto rt0 = chrono::high_resolution_clock::now();
@@ -105,26 +105,24 @@ int main() {
         for(int r = 0; r < Nrec; r++){
             receptor_vector[r].release(Lx, Ly, Rcell, D1, D2, dt, chemo_vector);
             receptor_vector[r].absorption(chemo_vector);
-            Batch_absorptions[((t) % BatchSize)][r] = receptor_vector[r].n;
+//            Batch_absorptions[((t) % BatchSize)][r] = receptor_vector[r].n;
+            nbr_absorption << receptor_vector[r].n << " ";
         }
-//        cout << "((t) % BatchSize) = " << ((t) % BatchSize) << endl;
-
+        nbr_absorption << endl;
         /** SAVES **/
 
-        if(((t+1) % BatchSize)==0){
-//            cout << "SAVE ---- ((t+1) % BatchSize) = " << ((t+1) % BatchSize) << endl;
-
+//        if(((t+1) % BatchSize)==0){
             // INSERT HERE CELL EVOLUTION
 
 
-            // RECEPTOR SAVE : n
-            for (int i = 0; i < BatchSize; ++i) {
-                for(int r = 0; r < Nrec; r++){
-                    nbr_absorption << Batch_absorptions[i][r] << " ";
-                }
-                nbr_absorption << endl;
-            }
-        }
+//            // RECEPTOR SAVE : n
+//            for (int i = 0; i < BatchSize; ++i) {
+//                for(int r = 0; r < Nrec; r++){
+//                    nbr_absorption << Batch_absorptions[i][r] << " ";
+//                }
+//                nbr_absorption << endl;
+//            }
+//        }
 
         // FREE MOLECULE SAVE : x, y
         for (chemo & c : chemo_vector) {
@@ -133,10 +131,10 @@ int main() {
         }
 
 //         CAPTURED MOLECULE SAVE : Nan, Nan
-//        for (int i = chemo_vector.size(); i < Nchemo; i++) {
-//            coordinate_x << "NaN" << " ";
-//            coordinate_y << "NaN" << " ";
-//        }
+        for (int i = chemo_vector.size(); i < Nchemo; i++) {
+            coordinate_x << "NaN" << " ";
+            coordinate_y << "NaN" << " ";
+        }
 
         coordinate_x << endl;
         coordinate_y << endl;

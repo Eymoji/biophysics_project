@@ -16,4 +16,11 @@ def open_txt(name):
 # Method to open a txt file and return a numpy array of the line i
 def open_txt_line(i, name):
     line = linecache.getline(name, i).split()
-    return np.array(line, dtype=int)
+    
+    # Remove "NaN" values from the line
+    line = [value for value in line if value != "NaN"]
+    
+    # Convert the remaining values to integers
+    line = np.array(line, dtype=int)
+    
+    return line
