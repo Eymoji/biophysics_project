@@ -17,10 +17,10 @@ int main() {
 
     //Hyper-parameters
     const double dt = 0.1;                        //Time interval between two iterations
-    const int BatchSize = 20;
+    const int BatchSize = 20;                     //Number of time iterations between two saves of data
     const double time_max = dt*BatchSize*10;      //Simulation time
-    const double Lx = 50*16;                      //Simulation length on each axis
-    const double Ly = 50*16;
+    const double Lx = 400;                        //Simulation length on each axis
+    const double Ly = 400;
 
     //Properties of the cell
     const double Rcell = 120;                   //cell radius
