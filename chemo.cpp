@@ -43,7 +43,8 @@ chemo::~chemo() = default;
 void chemo::diffusion_langevin(double eta, double dt) {
 
     //Random force on the molecule, intensity such that <F²> = 2D / dt -> Fmax = sqrt(6D)
-    double Fmax = sqrt(6*D1);
+//    double Fmax = sqrt(6*D1);
+    double Fmax = sqrt(6*D1/dt);
     double F = uniform_distribution(0,Fmax);
 
     //We now choose the orientation of the force that will apply on the chemo
@@ -51,8 +52,10 @@ void chemo::diffusion_langevin(double eta, double dt) {
 
     //We modify the velocity of the molecule
     double r=1;
-    vx = vx + dt * (F*cos(theta) - 6*M_PI*eta*r*vx);
-    vy = vy + dt * (F*sin(theta) - 6*M_PI*eta*r*vy);
+//    vx = vx + dt * (F*cos(theta) - 6*M_PI*eta*r*vx);
+//    vy = vy + dt * (F*sin(theta) - 6*M_PI*eta*r*vy);
+    vx = dt * F*cos(theta);
+    vy = dt * F*sin(theta);
 }
 
 

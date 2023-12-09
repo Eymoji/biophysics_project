@@ -28,7 +28,7 @@ int main() {
     const double VYcell = 0;
 
     //Properties of chemoattractants
-    const double D1 = 3;                        //Diffusion coefficient in the volume
+    const double D1 = 100;                        //Diffusion coefficient in the volume
     const double D2 = 1;                        //Diffusion coefficient on the surface of the cell
     const double cinf = 0.003;                  //Concentration at long distance
     const int Nchemo = int(cinf * Lx * Ly);     //Number of chemoattractants in the system
