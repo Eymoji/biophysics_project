@@ -103,7 +103,7 @@ int main() {
 
         // RECEPTOR EVOLUTION : Release (with a rate 1/Tau_B), absorb, count molecules absorbed by each receptor
         for(int r = 0; r < Nrec; r++){
-            receptor_vector[r].release(Lx, Ly, Rcell, D1, D2, dt, chemo_vector);
+            receptor_vector[r].release(dt, chemo_vector);
             receptor_vector[r].absorption(chemo_vector);
 //            Batch_absorptions[((t) % BatchSize)][r] = receptor_vector[r].n;
             nbr_absorption << receptor_vector[r].n << " ";
@@ -126,14 +126,16 @@ int main() {
 
         // FREE MOLECULE SAVE : x, y
         for (chemo & c : chemo_vector) {
-            coordinate_x << int(c.x) << " ";
-            coordinate_y << int(c.y) << " ";
-        }
 
-//         CAPTURED MOLECULE SAVE : Nan, Nan
-        for (int i = chemo_vector.size(); i < Nchemo; i++) {
+            if (c.absorbed == false) {
+                coordinate_x << int(c.x) << " ";
+                coordinate_y << int(c.y) << " ";
+            }
+//              CAPTURED MOLECULE SAVE : Nan, Nan
+            else {
             coordinate_x << "NaN" << " ";
             coordinate_y << "NaN" << " ";
+            }
         }
 
         coordinate_x << endl;

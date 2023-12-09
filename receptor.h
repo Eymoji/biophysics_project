@@ -28,13 +28,16 @@ public:
     //Average time a molecule remains bonded to a receptor when absorbed
     double Tau_B{};
 
+    //Index of the chemo that has been absorbed by this receptor, -1 if no receptor has been absorbed
+    int absorbed{};
+
     receptor();
     receptor(double s, double a, double theta, double Lx, double Ly, double Tau);
     ~receptor();
 
     //Absorption of a chemo by a receptor
     void absorption(vector<chemo>& vector_chemo);
-    void release(double Lx0, double Ly0, double a, double D, double D_prime, double dt, vector<chemo>& vector_chemo);
+    void release(double dt, vector<chemo>& vector_chemo);
     
 };
 

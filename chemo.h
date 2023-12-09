@@ -18,10 +18,11 @@ public:
     double vx, vy;          //velocity//
     double D1, D2;          //diffusion properties//
     double Lx, Ly, Rcell;   //map properties//
+    bool absorbed;          //Tells us if the chemo is absorbed or not
 
     // Constructor, reset and destructor
     chemo(double Lx0, double Ly0, double a, double D, double D_prime, const std::vector<double>& W);
-    chemo(double Lx0, double Ly0, double a, double D, double D_prime, double x_rec, double y_rec, double r_rec, double dt);
+    
     void reset_chemo();
     ~chemo();
 
@@ -34,4 +35,5 @@ public:
     //Update of position
     bool in_the_cell(double a) const;
     void update_position(double dt, double VxCell, double VyCell);
+    void released(double x_rec, double y_rec, double r_rec, double dt);
 };

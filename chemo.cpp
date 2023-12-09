@@ -22,26 +22,10 @@ chemo::chemo(double Lx0, double Ly0, double a, double D, double D_prime, const v
 
     D1 = D;
     D2 = D_prime;
+
+    absorbed = false;
 }
 
-//Initializer of a molecule released by a receptor
-chemo::chemo(double Lx0, double Ly0, double a, double D, double D_prime, double x_rec, double y_rec, double r_rec, double dt) {
-    Lx = Lx0;
-    Ly = Ly0;
-    Rcell = a;
-
-    D1 = D;
-    D2 = D_prime;
-
-    double theta_rec = theta(x_rec, y_rec);
-    double theta_release = uniform_distribution(M_PI/2., M_PI/2.) + theta_rec;
-
-    x = x_rec + 1.1*r_rec*cos(theta_release);
-    y = y_rec + 1.1*r_rec*sin(theta_release);
-	
-    vx = D*dt*cos(theta_release);
-    vy = D*dt*sin(theta_release);
-}
 
 void chemo::reset_chemo(){
     do {
@@ -108,4 +92,19 @@ void chemo::boundary_conditions() {
         y = Ly/2 + yb + (yb - (y-Ly/2));
 
     }
+}
+
+//Initializer of a molecule released by a receptor
+void chemo::released(double x_rec, double y_rec, double r_rec, double dt) {
+
+    double theta_rec = theta(x_rec, y_rec);
+    double theta_release = uniform_distribution(M_PI/2., M_PI/2.) + theta_rec;
+
+    x = x_rec + 1.1*r_rec*cos(theta_release);
+    y = y_rec + 1.1*r_rec*sin(theta_release);
+	
+    vx = D1*dt*cos(theta_release);
+    vy = D1*dt*sin(theta_release);
+
+    absorbed = false;
 }

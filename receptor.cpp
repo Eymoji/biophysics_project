@@ -10,6 +10,7 @@ receptor::receptor(double s, double a, double theta, double Lx, double Ly, doubl
     size = s;
     n=0;
     Tau_B = Tau;
+    absorbed = -1;
 }
 
 
@@ -64,13 +65,15 @@ void receptor::absorption(vector<chemo>& vector_chemo) {
         //}
 
         //we make disappear the chemo that has been absorbed, if there is one
-        if (i_absorbed > -1)
-            vector_chemo.erase(vector_chemo.begin() + i_absorbed);
+        if (i_absorbed > -1) {
+            vector_chemo[i_absorbed].absorbed = true;
+            absorbed = i_absorbed;
+        }
     }
 }
 
 
-void receptor::release(double Lx0, double Ly0, double a, double D, double D_prime, double dt, vector<chemo>& vector_chemo) {
+void receptor::release(double dt, vector<chemo>& vector_chemo) {
     double p;   //random variable that determines if a molecule is released by the receptor
     if (n == 1) {  //We check if the receptor is not empty
 
@@ -78,8 +81,8 @@ void receptor::release(double Lx0, double Ly0, double a, double D, double D_prim
 
         if (p <= dt) {  //The molecule is released by the recptor if this is realized
             n = 0;
-            chemo C(Lx0, Ly0, a, D, D_prime, x, y, size, dt);
-            vector_chemo.push_back(C);
+            vector_chemo[absorbed].released(x, y, size, dt);
+            absorbed = -1;
         }  
     }
 }
