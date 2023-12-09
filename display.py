@@ -83,28 +83,31 @@ def generate_frame(time):
         A += abs[time, receptor]*np.array([xi - Lx/2, yi - Ly/2])
 
     A = A / np.sqrt(np.sum(A**2))
-    A = A * (Rcell/2)
+    A = A * (Rcell/3)
     a = Rcell/20
     th_A = np.arctan2(A[1], A[0])
     
     # draw the arrow of where the maximum of chemoattractants is, based on the receptors
-    draw.line((Lx/2, Ly/2, Lx/2 + A[0], Ly/2 + A[1]), fill=(40,150,150), width=3)
-    draw.line((Lx/2 + A[0], Ly/2 + A[1],
-               Lx/2 + A[0] + a*(- np.cos(th_A) + np.sin(th_A)),
-               Ly/2 + A[1] + a*(- np.cos(th_A) - np.sin(th_A))), fill=(40,150,150), width=3)
-    draw.line((Lx/2 + A[0], Ly/2 + A[1],
-               Lx/2 + A[0] + a*(- np.cos(th_A) - np.sin(th_A)),
-               Ly/2 + A[1] + a*(+ np.cos(th_A) - np.sin(th_A))), fill=(40,150,150), width=3)
+    # draw.line((Lx/2, Ly/2, Lx/2 + A[0], Ly/2 + A[1]), fill=(40,150,150), width=3)
+    # draw.line((Lx/2 + A[0], Ly/2 + A[1],
+    #            Lx/2 + A[0] + a*(- np.cos(th_A) + np.sin(th_A)),
+    #            Ly/2 + A[1] + a*(- np.cos(th_A) - np.sin(th_A))), fill=(40,150,150), width=3)
+    # draw.line((Lx/2 + A[0], Ly/2 + A[1],
+    #            Lx/2 + A[0] + a*(- np.cos(th_A) - np.sin(th_A)),
+    #            Ly/2 + A[1] + a*(+ np.cos(th_A) - np.sin(th_A))), fill=(40,150,150), width=3)
     
     return np.array(img)
 
 # generate frames concurrently
 with ThreadPoolExecutor(6) as executor:
-    frames = list(executor.map(generate_frame, range(2,nt)))
+    frames = list(executor.map(generate_frame, range(nt-100,nt)))
 
 with imageio.get_writer('Static_cell_catching_chemo.mp4', format='FFMPEG', fps=20) as writer:
     for frame in frames:
         writer.append_data(frame)
+        
+# # save it also as a gif loop
+imageio.mimsave('Static_cell_catching_chemo.gif', frames, fps=20, loop=1)
 
 t1 = time.time()
 

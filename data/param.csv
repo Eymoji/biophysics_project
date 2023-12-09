@@ -1,2 +1,2 @@
-Rcell,Rrec,Nrec,time_max,dt,Lx,Ly
-120,5,75,10,0.1,400,400
+Rcell,Rrec,Nrec,time_max,dt,Lx,Ly,speed_cell,D
+100,4,78,100,0.1,800,800,2,1000

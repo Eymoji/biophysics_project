@@ -58,8 +58,8 @@ chemo::~chemo() = default;
 
 void chemo::diffusion_langevin(double eta, double dt) {
 
-    //Random force on the molecule, intensity such that <F²> = 2D / dt -> Fmax = sqrt(6D)
-    double Fmax = sqrt(6*D1);
+    //Random force on the molecule, intensity such that <F²> = 2D / dt -> Fmax = sqrt(6D/dt)
+    double Fmax = sqrt(6*D1/dt);
     double F = uniform_distribution(0,Fmax);
 
     //We now choose the orientation of the force that will apply on the chemo
@@ -67,8 +67,10 @@ void chemo::diffusion_langevin(double eta, double dt) {
 
     //We modify the velocity of the molecule
     double r=1;
-    vx = vx + dt * (F*cos(theta) - 6*M_PI*eta*r*vx);
-    vy = vy + dt * (F*sin(theta) - 6*M_PI*eta*r*vy);
+//    vx = vx + dt * (F*cos(theta) - 6*M_PI*eta*r*vx);
+//    vy = vy + dt * (F*sin(theta) - 6*M_PI*eta*r*vy);
+    vx = dt * (F*cos(theta));
+    vy = dt * (F*sin(theta));
 }
 
 
@@ -96,7 +98,10 @@ void chemo::update_position(double dt, double VxCell, double VyCell) {
 void chemo::boundary_conditions() {
     //We keep all the molecules onr our surface, which is consistent since the medium around the bacterium
     //is considered to be infinite, and we want to keep the same number of molecules in the system.
-    if (x < 0)  x += Lx;
+    if (x < 0) {
+        x += Lx;
+        y = uniform_distribution(0,Lx);
+    }
     if (x > Lx)  x -= Lx;
     if (y < 0)  y += Ly;
     if (y > Ly)  y -= Ly;

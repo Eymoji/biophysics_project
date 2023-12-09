@@ -18,19 +18,22 @@ int main() {
     //Hyper-parameters
     const double dt = 0.1;                        //Time interval between two iterations
 //    const int BatchSize = 20;                   //Number of time iterations between two saves of data
-    const double time_max = 10;                   //Simulation time
-    const double Lx = 400;                        //Simulation length on each axis
-    const double Ly = 400;
+    const double time_max = 100;                   //Simulation time
+    const double Lx = 800;                        //Simulation length on each axis
+    const double Ly = 800;
 
     //Properties of the cell
-    const double Rcell = 120;                   //cell radius
-    const double VXcell = 0;                    //cell speed
-    const double VYcell = 0;
+    const double Rcell = 100;                   //cell radius
+    double VXcell = 0;                          //cell speed
+    double VYcell = 0;
+
+    while (VXcell < 40){
+        VXcell += 2;
 
     //Properties of chemoattractants
-    const double D1 = 1;                        //Diffusion coefficient in the volume
+    const double D1 = 1000;                        //Diffusion coefficient in the volume
     const double D2 = 1;                        //Diffusion coefficient on the surface of the cell
-    const double cinf = 0.03;                    //Concentration at long distance
+    const double cinf = 0.05;                    //Concentration at long distance
     const int Nchemo = int(cinf * Lx * Ly);     //Number of chemoattractants in the system
 
     //Properties of receptors
@@ -39,12 +42,13 @@ int main() {
     const double Tau_B = 3.;                    //Average time a receptor keeps a captured molecule
 
     //Properties of the ambient medium
-    const double eta = 0.01;                     //Viscosity of the medium
+    const double eta = 0.1;                     //Viscosity of the medium
 
     //Save parameters
     ofstream parameters("data/param.csv");
-    parameters << "Rcell,Rrec,Nrec,time_max,dt,Lx,Ly" << endl;
-    parameters << Rcell << "," << Rrec << "," << Nrec << "," << time_max << "," << dt << "," << Lx << "," << Ly << endl;
+    parameters << "Rcell,Rrec,Nrec,time_max,dt,Lx,Ly,speed_cell,D" << endl;
+    parameters  << Rcell << "," << Rrec << "," << Nrec << "," << time_max << ","
+                << dt << "," << Lx << "," << Ly << "," << norm(VXcell,VYcell) << "," << D1 << endl;
     parameters.close();
 
 
@@ -145,5 +149,8 @@ int main() {
     coordinate_y.close();
     nbr_absorption.close();
     coord_receptor.close();
+
+    system("python3 save_flux.py");
+    }
     return 0;
 }
