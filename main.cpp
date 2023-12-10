@@ -18,7 +18,7 @@ int main() {
     //Hyper-parameters
     const double dt = 0.1;                        //Time interval between two iterations
 //    const int BatchSize = 20;                   //Number of time iterations between two saves of data
-    const double time_max = 1000;                   //Simulation time
+    const double time_max = 200;                   //Simulation time
     const double Lx = 800;                        //Simulation length on each axis
     const double Ly = 800;
 
@@ -28,14 +28,14 @@ int main() {
     const double VYcell = 0;
 
     //Properties of chemoattractants
-    const double D1 = 100;                        //Diffusion coefficient in the volume
+    const double D1 = 100;                      //Diffusion coefficient in the volume
     const double D2 = 1;                        //Diffusion coefficient on the surface of the cell
-    const double cinf = 0.003;                  //Concentration at long distance
+    const double cinf = 0.05;                   //Concentration at long distance
     const int Nchemo = int(cinf * Lx * Ly);     //Number of chemoattractants in the system
 
     //Properties of receptors
     const double Rrec = 2;                      //Receptors radius
-    const int Nrec = M_PI*Rcell/(3.*Rrec);      //Number of receptors
+    const int Nrec = M_PI*Rcell/(2.*Rrec);      //Number of receptors
     const double Tau_B = 5.;                    //Average time a receptor keeps a captured molecule
 
     //Properties of the ambient medium
