@@ -1,0 +1,31 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import math
+
+Lx = float(500)
+Ly = float(500)
+cell = [Lx,Ly]
+Radius_cell = 120
+Radius_receptor = 2
+time_max = 100
+dt = 0.1
+
+with open('/rec.txt', 'r') as file:
+    array = [row.strip() for row in file]
+
+data = []
+x = []
+y = []
+coord = []
+r = []
+with open('/rec.txt') as f:
+    for line in f:
+        data.append([float(x) for x in line.split()])
+        coord = np.array(data) - np.array(cell)
+x = [i[0] for i in coord]
+y = [i[1] for i in coord]
+
+for i in range(len(y)):
+  r.append(math.hypot(x[i], y[i] ))
+  proba = Radius_cell / np.array(r) 
+  print("%.2f" % proba[i])
