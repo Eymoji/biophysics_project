@@ -60,7 +60,7 @@ def generate_frame(time):
 
             if 0 <= xi < width and 0 <= yi < height:
                 r, g, b = img.getpixel((xi, yi))
-                img.putpixel((xi, yi), (0, g + 40, 200))
+                img.putpixel((xi, yi), (0, g + 60, 220))
 
     # Vector A : direction of the maximum of chemoattractants
     A = np.zeros(2)
@@ -71,9 +71,9 @@ def generate_frame(time):
         
         if abs[time, receptor] <= 5:
             ip = abs[time, receptor]
-            r = int(40 + (200-40)*(ip)/5)
-            g = int(150 + (40-150)*(ip)/5)
-            b = int(150 + (40-150)*(ip)/5)
+            r = int(40 + (200-40)*(ip))
+            g = int(150 + (40-150)*(ip))
+            b = int(150 + (40-150)*(ip))
         else:
             r,g,b = 255,0,0
         
@@ -82,29 +82,32 @@ def generate_frame(time):
         # add the contribution of this receptor to the vector A, weighted by the number of chemoattractants absorbed
         A += abs[time, receptor]*np.array([xi - Lx/2, yi - Ly/2])
 
-    # A = A / np.sqrt(np.sum(A**2))
-    # A = A * (Rcell/2)
-    # a = Rcell/20
-    # th_A = np.arctan2(A[1], A[0])
+    A = A / np.sqrt(np.sum(A**2))
+    A = A * (Rcell/2)
+    a = Rcell/20
+    th_A = np.arctan2(A[1], A[0])
     
-    ## draw the arrow of where the maximum of chemoattractants is, based on the receptors
-    # draw.line((Lx/2, Ly/2, Lx/2 + A[0], Ly/2 + A[1]), fill=(40,150,150), width=3)
-    # draw.line((Lx/2 + A[0], Ly/2 + A[1],
-    #            Lx/2 + A[0] + a*(- np.cos(th_A) + np.sin(th_A)),
-    #            Ly/2 + A[1] + a*(- np.cos(th_A) - np.sin(th_A))), fill=(40,150,150), width=3)
-    # draw.line((Lx/2 + A[0], Ly/2 + A[1],
-    #            Lx/2 + A[0] + a*(- np.cos(th_A) - np.sin(th_A)),
-    #            Ly/2 + A[1] + a*(+ np.cos(th_A) - np.sin(th_A))), fill=(40,150,150), width=3)
+    # draw the arrow of where the maximum of chemoattractants is, based on the receptors
+    draw.line((Lx/2, Ly/2, Lx/2 + A[0], Ly/2 + A[1]), fill=(40,150,150), width=3)
+    draw.line((Lx/2 + A[0], Ly/2 + A[1],
+               Lx/2 + A[0] + a*(- np.cos(th_A) + np.sin(th_A)),
+               Ly/2 + A[1] + a*(- np.cos(th_A) - np.sin(th_A))), fill=(40,150,150), width=3)
+    draw.line((Lx/2 + A[0], Ly/2 + A[1],
+               Lx/2 + A[0] + a*(- np.cos(th_A) - np.sin(th_A)),
+               Ly/2 + A[1] + a*(+ np.cos(th_A) - np.sin(th_A))), fill=(40,150,150), width=3)
     
     return np.array(img)
 
 # generate frames concurrently
 with ThreadPoolExecutor(6) as executor:
-    frames = list(executor.map(generate_frame, range(nt-200,nt)))
+    frames = list(executor.map(generate_frame, range(2,200)))
 
-with imageio.get_writer('Static_cell_catching_chemo.mp4', format='FFMPEG', fps=20) as writer:
+with imageio.get_writer('Static_cell_catching_chemo.mp4', format='FFMPEG', fps=24) as writer:
     for frame in frames:
         writer.append_data(frame)
+        
+# save as gif
+imageio.mimsave('Static_cell_catching_chemo.gif', frames, fps=24, loop=1)
 
 t1 = time.time()
 

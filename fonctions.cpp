@@ -69,7 +69,7 @@ vector<double> random_landscape_initializer(){
 vector<double> random_landscape_distribution(double Lx, double Ly, const vector<double>& W){
     double x, y, c, cmin, cmax, f;
 
-//    do {
+    do {
         x = distf(engf); // uniform distribution [0,1]
         y = distf(engf);
         c = distf(engf);
@@ -81,7 +81,7 @@ vector<double> random_landscape_distribution(double Lx, double Ly, const vector<
         for (int i = 0; i < Nw; ++i) {
             double dx = periodic_dx(x,W[i],1);
             double dy = periodic_dx(y,W[Nw+i],1);
-            double r0 = W[2*Nw+i]/4;
+            double r0 = W[2*Nw+i]/5;
             double a0 = W[3*Nw+i];
 
             f += a0*exp(-(dx*dx+dy*dy)/(2*r0*r0));
@@ -93,11 +93,13 @@ vector<double> random_landscape_distribution(double Lx, double Ly, const vector<
         }
 
 
-//    } while (((c * (cmax - cmin) + cmin) > f));
+    } while (((c * (cmax - cmin) + cmin) > f));
 
     vector<double> w (2);
     w[0] = Lx * x;
     w[1] = Ly * y;
     return w;
 }
+
+
 

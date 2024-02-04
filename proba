@@ -10,7 +10,7 @@ Radius_receptor = 2
 time_max = 100
 dt = 0.1
 
-with open('/rec.txt', 'r') as file:
+with open('data/rec.txt', 'r') as file:
     array = [row.strip() for row in file]
 
 data = []
@@ -18,7 +18,7 @@ x = []
 y = []
 coord = []
 r = []
-with open('/rec.txt') as f:
+with open('data/rec.txt') as f:
     for line in f:
         data.append([float(x) for x in line.split()])
         coord = np.array(data) - np.array(cell)

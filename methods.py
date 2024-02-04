@@ -24,3 +24,17 @@ def open_txt_line(i, name):
     line = np.array(line, dtype=int)
     
     return line
+
+def open_txt_line_with_nan(i, name):
+    line = linecache.getline(name, i).split()
+    
+    # Remove "NaN" values from the line
+    line = [value if value != "NaN" else -1 for value in line]
+    line = np.array(line, dtype=int)
+
+        
+    
+    
+    
+    
+    return line

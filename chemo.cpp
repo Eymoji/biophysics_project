@@ -83,10 +83,22 @@ void chemo::update_position(double dt, double VxCell, double VyCell) {
 void chemo::boundary_conditions() {
     //We keep all the molecules onr our surface, which is consistent since the medium around the bacterium
     //is considered to be infinite, and we want to keep the same number of molecules in the system.
-    if (x < 0)  x += Lx;
-    if (x > Lx)  x -= Lx;
-    if (y < 0)  y += Ly;
-    if (y > Ly)  y -= Ly;
+    if (x < 0) {
+        x += Lx;
+        y = uniform_distribution(0,Ly);
+    }
+    if (x > Lx){
+            x -= Lx;
+            y = uniform_distribution(0,Ly);
+    }
+    if (y > Ly){
+        y -= Ly;
+        x = uniform_distribution(0,Lx);
+    }
+    if (y < 0){
+        y += Ly;
+        x = uniform_distribution(0,Lx);
+    }
 
     if (norm2(x-Lx/2.,y-Ly/2.) < Rcell*Rcell){
         double xb = Rcell*cos(theta(x-Lx/2,y-Ly/2));

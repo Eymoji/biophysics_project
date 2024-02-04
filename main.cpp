@@ -11,6 +11,20 @@
 
 using namespace std;
 
+vector<double> update_cell_speed(const vector<receptor>& rec_vec, double Vx0, double Vy0, double Lx, double Ly){
+    double VX = 0;
+    double VY = 0;
+    double Vnorm = 10;
+    for(const receptor& rec : rec_vec){
+        VX += (rec.x - Lx/2) * rec.n;
+        VY -= (rec.y - Ly/2) * rec.n;
+    }
+    VX = VX + Vx0;
+    VY = VY + Vy0;
+    return {VX * Vnorm / norm(VX,VY), VY * Vnorm / norm(VX,VY)};
+}
+
+
 int main() {
 
     /** PARAMETERS **/
@@ -24,13 +38,13 @@ int main() {
 
     //Properties of the cell
     const double Rcell = 120;                   //cell radius
-    const double VXcell = 0;                    //cell speed
-    const double VYcell = 0;
+    double VXcell = 0;                    //cell speed
+    double VYcell = 0;
 
     //Properties of chemoattractants
     const double D1 = 100;                      //Diffusion coefficient in the volume
     const double D2 = 1;                        //Diffusion coefficient on the surface of the cell
-    const double cinf = 0.05;                   //Concentration at long distance
+    const double cinf = 0.03;                   //Concentration at long distance
     const int Nchemo = int(cinf * Lx * Ly);     //Number of chemoattractants in the system
 
     //Properties of receptors
@@ -109,6 +123,11 @@ int main() {
             nbr_absorption << receptor_vector[r].n << " ";
         }
         nbr_absorption << endl;
+
+        vector<double> V = update_cell_speed(receptor_vector, VXcell,VYcell,Lx,Ly);
+        VXcell = V[0];
+        VYcell = V[1];
+
         /** SAVES **/
 
 //        if(((t+1) % BatchSize)==0){
